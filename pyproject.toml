@@ -24,10 +24,11 @@ dependencies = [
     "sentence-transformers>=3.3,<4",
     "einops>=0.8,<0.9",                 # required by nomic-embed-text remote code
     "transformers>=4.46,<5",
+    "sentencepiece>=0.2,<0.3",          # DeBERTa-v3 NLI tokenizer (else all-neutral)
     "torch>=2.2,<3",
     "llama-cpp-python>=0.3.2,<0.4",
     "huggingface-hub>=0.26,<1",
-    "numpy>=1.26,<2",
+    "numpy>=1.26,<3",
 ]
 
 [project.optional-dependencies]
@@ -70,6 +71,8 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["PLR2004", "S101"]
+"app/generation/prompts.py" = ["E501"]  # prompt/example text; wrapping would change it
+"app/eval/generation.py" = ["E501"]     # markdown report tables read better unwrapped
 
 [tool.ruff.lint.flake8-bugbear]
 # FastAPI's dependency-injection idiom: Depends()/Query()/... in argument defaults.
@@ -84,6 +87,10 @@ extend-immutable-calls = [
 testpaths = ["tests"]
 asyncio_mode = "auto"
 filterwarnings = ["ignore::DeprecationWarning"]
+markers = [
+    "smoke: real-model regression checks; skipped without deps + a built index",
+    "slow: real generation (loads a GGUF + runs it); minutes, not seconds",
+]
 
 [tool.ad_fontes]
 # Single source of truth for the corpus version string surfaced by /api/health.

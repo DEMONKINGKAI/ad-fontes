@@ -66,6 +66,14 @@ class Settings(BaseSettings):
     # --- Generation -------------------------------------------------------
     default_model: str = "tuned"
     local_timeout_s: float = 25.0
+    llm_ctx: int = 4096
+    llm_threads: int | None = None
+    llm_max_tokens: int = 512
+    llm_temperature: float = 0.3
+    # "json_object" (default) constrains to valid JSON with the schema in the
+    # prompt; "schema" uses a JSON-schema grammar (crashes some llama-cpp builds);
+    # "none" relies on prompt + parsing. See ARCHITECTURE.md.
+    llm_grammar_mode: str = "json_object"
     base_gguf_repo: str = "Qwen/Qwen2.5-1.5B-Instruct-GGUF"
     base_gguf_file: str = "qwen2.5-1.5b-instruct-q4_k_m.gguf"
     tuned_gguf_repo: str = "DEMONKINGKAI/ad-fontes-generator-1.5b-dpo-gguf"
@@ -76,6 +84,17 @@ class Settings(BaseSettings):
     embed_model: str = "nomic-ai/nomic-embed-text-v1.5"
     nli_model: str = "MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli"
     retrieval_top_k: int = 6
+
+    # --- Scope gate (guardrails) --------------------------------------
+    # Decline only when the best retrieved chunk is below this — i.e. the corpus
+    # has nothing close. "Answerable-looking but unanswerable" questions are the
+    # generator's job, not the gate's. Set from the Phase 2 eval.
+    scope_top_score_threshold: float = 0.55
+    scope_centroid_threshold: float = 0.60  # diagnostic only
+
+    # When False the API lifespan skips loading the embedder / retriever / models
+    # (tests inject fakes instead). Always True in Docker and on the Space.
+    eager_model_load: bool = True
 
     # --- Paths ----------------------------------------------------------
     corpus_dir: Path = _REPO_ROOT / "data" / "corpus"

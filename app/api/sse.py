@@ -48,8 +48,13 @@ def _json_default(obj: object) -> object:
     raise TypeError(f"not JSON-serialisable: {type(obj)!r}")
 
 
-def token(text: str) -> SSEEvent:
-    return SSEEvent("token", {"text": text})
+def token(text: str, *, replace: bool = False) -> SSEEvent:
+    """A prose delta. ``replace=True`` means "discard prose so far and use this"
+    — sent once if generation falls back to the hosted model mid-stream."""
+    payload: dict[str, object] = {"text": text}
+    if replace:
+        payload["replace"] = True
+    return SSEEvent("token", payload)
 
 
 def sources(payload: Any) -> SSEEvent:

@@ -139,6 +139,12 @@ class ClaimVerification(BaseModel):
     numeric_detail: str | None = Field(
         default=None, description="Which token failed the numeric guard, when flagged."
     )
+    lexical_backstop: bool = Field(
+        default=False,
+        description="True when the label is 'supported' only because the claim's "
+        "content words are almost entirely present in the cited text (NLI was "
+        "neutral). A weaker form of support than NLI entailment.",
+    )
 
 
 class Claim(BaseModel):

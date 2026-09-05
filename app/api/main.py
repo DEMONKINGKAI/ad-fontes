@@ -35,9 +35,21 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings: Settings = app.state.settings
     _configure_logging(settings)
     log.info("ad fontes %s starting; corpus_version=%s", __version__, settings.corpus_version)
-    app.state.app_state = AppState.create(settings)
-    # Phase 1: load embedder + Chroma retriever into app.state.app_state.components
-    # Phase 2: load base/tuned GGUF generators + NLI model
+    state = AppState.create(settings)
+    app.state.app_state = state
+
+    if settings.eager_model_load:
+        from app.bootstrap import load_generation, load_retrieval
+
+        try:
+            load_retrieval(state.components, settings)
+        except Exception:
+            log.exception("retrieval failed to load; /api/ask will report degraded")
+        try:
+            load_generation(state.components, settings)
+        except Exception:
+            log.exception("generation failed to load; /api/ask will 503")
+
     try:
         yield
     finally:

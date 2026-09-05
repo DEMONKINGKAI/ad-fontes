@@ -31,8 +31,8 @@ This repo is the **backend only** — a CORS-enabled, streaming HTTP API. The ch
 | Phase | Scope | State |
 |---|---|---|
 | 0 | Skeleton: layout, config, API contract, safety, Docker, CI | ✅ done |
-| 1 | Ingestion + retrieval + retrieval eval | ⬜ |
-| 2 | Generation + verification (base model) | ⬜ |
+| 1 | Ingestion + retrieval + retrieval eval | ✅ done |
+| 2 | Generation + verification (base model) | ✅ done |
 | 3 | Preference-data pipeline (RLAIF) | ⬜ |
 | 4 | DPO training (Colab) + GGUF export | ⬜ |
 | 5 | Evaluation: base vs. tuned, the story | ⬜ |
@@ -55,9 +55,23 @@ docker compose up --build     # API on http://localhost:8000
 - `GET  http://localhost:8000/api/health` — models loaded, corpus version, index size
 - `GET  http://localhost:8000/api/projects` — project list for the widget's chips
 
-> **Phase 0 note:** `/api/ask` and `/api/ask/sync` return a `pipeline_not_ready` error /
-> `503` until Phase 2. Retrieval-backed answers arrive in Phase 2; retrieval itself in
-> Phase 1. `/api/health`, `/api/projects`, `/api/feedback` work now.
+> **Status note:** the full pipeline is live — `/api/ask` (SSE) and `/api/ask/sync`
+> answer with grounded, per-claim-verified responses from the **base** model.
+> `model: "tuned"` currently falls back to `base` (the DPO model lands in Phase 4;
+> `meta.model_requested` reports what actually ran). `/api/health` shows which
+> models loaded.
+
+The first boot downloads the embedding model (~0.5 GB), the base GGUF (~1 GB) and the
+NLI model (~0.4 GB), and builds the index. To warm everything ahead of time:
+
+```bash
+python -m app.ingestion.cli --rebuild               # index -> data/index/
+python -m scripts.download_models --embed --nli --base-gguf
+```
+
+Set `HF_TOKEN` (HF Pro recommended) to enable the hosted fallback for slow local
+generations — without it, a local timeout surfaces as an error rather than a
+different model.
 
 ### Without Docker (dev loop)
 
@@ -83,10 +97,12 @@ pre-commit install                        # optional: run the hooks on every com
 python -m app.ingestion.cli --rebuild
 ```
 
-### Reproduce the evaluation (Phase 2 / 5)
+### Reproduce the evaluation
 
 ```bash
-python -m app.eval.run_eval --stage compare      # one command, base vs. tuned
+python -m app.eval.run_eval --stage retrieval                  # Phase 1
+python -m app.eval.run_eval --stage generation --model base    # Phase 2 baseline
+python -m app.eval.run_eval --stage compare                    # Phase 5: base vs tuned
 ```
 
 ---
@@ -116,5 +132,37 @@ ARCHITECTURE.md.
 
 ## Results
 
-_Populated from real eval runs in Phase 2 (baseline) and Phase 5 (base vs. tuned). No number
-appears here that isn't from a run of `app/eval`._
+**Retrieval (Phase 1)** — 76-question eval, 94-chunk corpus, `nomic-embed-text-v1.5`, CPU,
+deterministic across runs:
+
+| | hit@6 | hit@10 | MRR |
+|---|---|---|---|
+| chunk-level | 93.9% | 100% | 0.74 |
+| file-level | 100% | 100% | 0.94 |
+
+Metadata boosts (project / tech / stack-map / section-title / FAQ de-prioritisation) add
+**+18 pts** chunk hit@6 over plain dense retrieval. Negative-control questions (salary, Rust,
+…) sit ~0.13 lower in top-1 similarity than answerable ones. Full method and the ablation are
+in [ARCHITECTURE.md](ARCHITECTURE.md#phase-1-decisions--ingestion--retrieval); reproduce with
+`python -m app.eval.run_eval --stage retrieval`.
+
+**Generation faithfulness — base model baseline (Phase 2)** — same 76 questions through the
+full pipeline (retrieve → base GGUF → structural + NLI + numeric verification), commit
+`e17fa62`, full report in
+[`app/eval/baselines/generation-base-phase2.md`](app/eval/baselines/generation-base-phase2.md):
+
+| metric | base (Qwen2.5-1.5B) |
+|---|---|
+| **unsupported + fabricated claims / 100 answers** | **56.6** |
+| citation hit rate | 93.8% |
+| supported / unsupported / fabricated / contradicted (80 claims) | 34 / 38 / 5 / 3 |
+| declines the 4 denylist negatives; answers "does Kai know Rust?" with unsupported claims | 40% decline on 10 negative controls |
+| latency p50 / p95 (dev box) | 14 s / 28 s · 7% hosted-fallback |
+
+Genuine failures the layer catches: putting EffiGO's work at Axisray (*contradicted*),
+"deployed Threadfall to production for real users" (*unsupported* — corpus says no demo),
+correct facts cited to a non-retrieved chunk (*fabricated_citation*). ~Half the *unsupported*
+labels are NLI-recall misses on legitimately-grounded summary claims — see ARCHITECTURE.md.
+
+**Phase 5** compares this against the DPO-tuned model with bootstrap CIs. No number here isn't
+from a run of `app/eval`.

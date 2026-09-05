@@ -35,6 +35,48 @@ jobs:
       - name: Test
         run: pytest -q
 
+  retrieval:
+    # Real embedder + Chroma: builds the index and runs the smoke tests + the
+    # retrieval eval. Heavier (downloads the embedding model) so it only runs on
+    # push to main, not every PR.
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Cache Hugging Face models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-${{ hashFiles('requirements.txt') }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-test.txt
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install "sentence-transformers>=3.3,<4" "chromadb>=0.5.5,<0.6" \
+            "einops>=0.8,<0.9" "transformers>=4.46,<5" "sentencepiece>=0.2,<0.3"
+          pip install --no-deps -e .
+      - name: Build index
+        run: python -m app.ingestion.cli --rebuild
+      - name: Smoke tests (retrieval + NLI; generation smoke needs a GGUF -> local only)
+        run: pytest -q -m "smoke and not slow"
+      - name: Retrieval eval (must clear a floor)
+        run: |
+          python -m app.eval.run_eval --stage retrieval
+          python - <<'PY'
+          import glob, json
+          j = json.load(open(sorted(glob.glob("data/eval/retrieval-*-boosts.json"))[-1]))
+          h6 = j["summary"]["file_hit_at_k"]["6"]
+          c6 = j["summary"]["chunk_hit_at_k"]["6"]
+          print(f"file hit@6={h6:.3f} chunk hit@6={c6:.3f}")
+          assert h6 >= 0.95, f"file hit@6 regressed: {h6}"
+          assert c6 >= 0.85, f"chunk hit@6 regressed: {c6}"
+          PY
+
   docker:
     runs-on: ubuntu-latest
     steps:

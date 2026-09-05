@@ -1,67 +1,86 @@
-"""System and user prompt construction for the generator.
+"""System / user prompt construction for the generator.
 
 Voice rules (brief §2, §4, §8), enforced here and rewarded by the DPO stage:
-  * Speak about Kai in the third person. Never answer as Kai / in the first person.
-  * Every claim cites at least one retrieved ``chunk_id``.
-  * If the corpus does not answer the question, say so — do not guess.
-  * Out-of-scope topics (salary, personal life, immigration status, anything not
-    in the corpus) get a brief decline, no speculation.
-  * ``recruiter`` -> concise, outcome-focused, minimal jargon.
-    ``engineer``  -> technical, mentions methods/tradeoffs/numbers.
+  * Speak about Kai in the third person. Never answer as Kai / first person.
+  * Every claim cites at least one retrieved passage id.
+  * If the context doesn't answer the question, say so — don't guess.
+  * Out-of-scope topics (salary, personal life, immigration, anything not in the
+    context) get a brief decline.
+  * ``recruiter`` -> concise, outcome-first, little jargon.
+    ``engineer``  -> technical: methods, tradeoffs, measured numbers.
+  * Don't inflate: keep the source's verbs, numbers, and stated limitations.
 
-Phase 2 fills in the retrieved-context formatting; the strings below are the
-stable core and are referenced by the guardrail and eval code already.
+The prompts are deliberately terse and concrete, with one worked example — a 1.5B
+model follows a demonstrated format far more reliably than a described one.
 """
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from app.api.schemas import Audience
-
-_VOICE = (
-    'You are the portfolio assistant for Archit "Kai" Sharma. You answer recruiters\' '
-    "and engineers' questions about Kai's public projects, skills, and experience.\n"
-    "Rules:\n"
-    "- Refer to Kai in the third person. Never write as if you are Kai.\n"
-    "- Use ONLY the numbered context passages below. Every claim must cite the "
-    "chunk_id(s) it comes from.\n"
-    '- If the context does not contain the answer, say "the corpus doesn\'t say" '
-    "rather than guessing.\n"
-    "- Do not discuss salary, personal life, immigration status, or anything absent "
-    "from the context. Decline briefly if asked.\n"
-    "- Do not inflate: keep the source's verbs (if it says \"contributed\", don't say "
-    '"led"), numbers, and stated limitations.\n'
-)
-
-_AUDIENCE_NOTE = {
-    Audience.recruiter: (
-        "Audience: a recruiter. Be concise (2-4 sentences of prose). Lead with the "
-        "outcome. Minimal jargon."
-    ),
-    Audience.engineer: (
-        "Audience: an engineer. Be technical and specific: name methods, tradeoffs, "
-        "datasets, and measured numbers where the context has them."
-    ),
-    Audience.auto: "Audience: general. Default to concise unless the question is technical.",
-}
-
-_OUTPUT_CONTRACT = (
-    "Respond with a single JSON object: "
-    '{"prose": "<answer>", "claims": [{"text": "<atomic assertion>", '
-    '"cite": ["<chunk_id>"]}]}. '
-    "The prose is what the reader sees; each claim is one checkable statement drawn "
-    "from the prose, with its supporting chunk_id(s)."
-)
+from app.retrieval.retriever import RetrievedChunk
 
 DECLINE_MESSAGE = (
-    "That's outside what Kai's portfolio corpus covers, so I can't answer it here. "
-    "I can talk about his projects, skills, experience, and tech stack."
+    "That's outside what Kai's portfolio covers, so I can't answer it here. I can "
+    "talk about his projects, skills, experience, and tech stack."
+)
+
+_VOICE = """You are the portfolio assistant for Archit "Kai" Sharma. You answer questions \
+about Kai's public projects, skills, and experience for recruiters and engineers.
+
+Hard rules:
+- Write about Kai in the third person ("Kai built…"). Never write as Kai.
+- Use ONLY the numbered passages below. Add no outside knowledge.
+- Every claim must cite the id(s) of the passage(s) it comes from — the value \
+after "id:" in the passage header, copied exactly.
+- If the passages don't answer the question, make prose one sentence saying the \
+corpus doesn't cover it and return "claims": [].
+- Never state a number, date, version or metric that is not written in a cited \
+passage.
+- Keep the source's wording: if it says "contributed" don't write "led"; if it \
+says "prototype" don't write "production"."""
+
+_AUDIENCE = {
+    Audience.recruiter: (
+        "Audience: a recruiter. 2-4 sentences of prose. Lead with the outcome. "
+        "Plain language, minimal jargon."
+    ),
+    Audience.engineer: (
+        "Audience: an engineer. Be specific and technical: name the methods, "
+        "datasets, tradeoffs and measured numbers the passages give."
+    ),
+    Audience.auto: "Audience: general. Concise unless the question is clearly technical.",
+}
+
+_EXAMPLE = """Example — passages:
+[1] id: threadfall#one-line-summary
+Threadfall > One-line summary
+A solo narrative RPG where story outcomes are decided by a deterministic causal engine, and the LLM only narrates what the engine has already decided.
+
+Example — question: What is Threadfall?
+Example — answer:
+{"prose": "Threadfall is a solo narrative RPG where a deterministic causal engine decides story outcomes and the language model only narrates them.", "claims": [{"text": "Threadfall is a solo narrative RPG whose outcomes are decided by a deterministic causal engine, with the LLM restricted to narration.", "cite": ["threadfall#one-line-summary"]}]}"""
+
+_OUTPUT = (
+    "Respond with ONE JSON object and nothing else:\n"
+    '{"prose": "<the answer the reader sees>", '
+    '"claims": [{"text": "<one checkable statement from your prose>", "cite": ["<passage id>"]}]}'
 )
 
 
 def system_prompt(audience: Audience) -> str:
-    note = _AUDIENCE_NOTE.get(audience, _AUDIENCE_NOTE[Audience.auto])
-    return f"{_VOICE}\n{note}\n\n{_OUTPUT_CONTRACT}"
+    note = _AUDIENCE.get(audience, _AUDIENCE[Audience.auto])
+    return f"{_VOICE}\n\n{note}\n\n{_OUTPUT}\n\n{_EXAMPLE}"
 
 
-def user_prompt(question: str, context_block: str) -> str:  # pragma: no cover - Phase 2
-    return f"Context passages:\n{context_block}\n\nQuestion: {question}"
+def format_context(chunks: Sequence[RetrievedChunk]) -> str:
+    """Numbered, id-labelled passages for the user prompt."""
+    blocks = []
+    for i, c in enumerate(chunks, start=1):
+        blocks.append(f"[{i}] id: {c.chunk_id}\n{c.title}\n{c.text}")
+    return "\n\n".join(blocks)
+
+
+def user_prompt(question: str, context_block: str) -> str:
+    return f"Passages:\n\n{context_block}\n\n---\nQuestion: {question}"

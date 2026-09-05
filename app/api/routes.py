@@ -133,9 +133,9 @@ async def health(state: AppState = Depends(get_state)) -> HealthResponse:
         ModelStatus(name="nli", loaded=components.nli is not None),
     ]
     index_size = 0
-    if components.retriever is not None and hasattr(components.retriever, "count"):
+    if components.retriever is not None and hasattr(components.retriever, "index_health"):
         try:
-            index_size = int(components.retriever.count())
+            index_size = int(components.retriever.index_health()["indexed"])
         except Exception:
             index_size = 0
     all_loaded = all(m.loaded for m in models)

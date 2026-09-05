@@ -77,27 +77,45 @@ def _struct(ok=True, fabricated=False):
 
 
 def test_fuse_fabricated_short_circuits():
-    label, flag = fuse_label(_struct(ok=False, fabricated=True), None, check_numbers("x", ["x"]))
+    label, _flag, _lex = fuse_label(
+        _struct(ok=False, fabricated=True), None, check_numbers("x", ["x"])
+    )
     assert label is ClaimLabel.fabricated_citation
 
 
 def test_fuse_supported():
-    label, _ = fuse_label(_struct(), NLIScore(0.9, 0.08, 0.02), check_numbers("x", ["x"]))
+    label, _, _ = fuse_label(_struct(), NLIScore(0.9, 0.08, 0.02), check_numbers("x", ["x"]))
     assert label is ClaimLabel.supported
 
 
 def test_fuse_contradicted():
-    label, _ = fuse_label(_struct(), NLIScore(0.1, 0.1, 0.8), check_numbers("x", ["x"]))
+    label, _, _ = fuse_label(_struct(), NLIScore(0.1, 0.1, 0.8), check_numbers("x", ["x"]))
     assert label is ClaimLabel.contradicted
 
 
 def test_fuse_unsupported_when_neutral():
-    label, _ = fuse_label(_struct(), NLIScore(0.3, 0.6, 0.1), check_numbers("x", ["x"]))
+    label, _, _ = fuse_label(_struct(), NLIScore(0.3, 0.6, 0.1), check_numbers("x", ["x"]))
     assert label is ClaimLabel.unsupported
 
 
+def test_lexical_backstop_rescues_neutral_when_coverage_is_high():
+    label, _, lex = fuse_label(
+        _struct(), NLIScore(0.2, 0.75, 0.05), check_numbers("x", ["x"]), lexical_coverage=0.95
+    )
+    assert label is ClaimLabel.supported
+    assert lex is True
+
+
+def test_lexical_backstop_never_overrides_contradiction():
+    label, _, lex = fuse_label(
+        _struct(), NLIScore(0.05, 0.15, 0.8), check_numbers("x", ["x"]), lexical_coverage=1.0
+    )
+    assert label is ClaimLabel.contradicted
+    assert lex is False
+
+
 def test_numeric_flag_does_not_override_label():
-    label, flag = fuse_label(
+    label, flag, _ = fuse_label(
         _struct(),
         NLIScore(0.9, 0.05, 0.05),
         check_numbers("99%", ["the figure was 40%"]),

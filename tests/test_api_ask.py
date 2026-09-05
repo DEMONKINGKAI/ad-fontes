@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 
-def test_ask_sync_returns_503_until_phase_2(client):
+def test_ask_sync_503_when_components_not_loaded(client):
+    # conftest sets eager_model_load=False, so no generator/NLI is loaded
     r = client.post("/api/ask/sync", json={"question": "What did Kai build?"})
     assert r.status_code == 503
-    assert "Phase 2" in r.json()["detail"]
+    assert "loading" in r.json()["detail"].lower()
 
 
 def test_ask_sync_length_cap(client):

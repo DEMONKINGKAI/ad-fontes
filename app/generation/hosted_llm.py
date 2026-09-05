@@ -1,30 +1,106 @@
-"""Hosted fallback generator via HF Inference Providers. (Impl: Phase 2.)
+"""Hosted fallback generator via Hugging Face Inference Providers.
 
-Used only when local generation exceeds the timeout. Requires ``HF_TOKEN``
-(Kai's is HF Pro, which also lifts the Phase 3 judge's rate limits). Model id and
-provider come from config (``AD_FONTES_HOSTED_MODEL`` / ``_PROVIDER``). The same
-JSON schema is requested via ``response_format`` so downstream verification is
-identical regardless of which backend answered.
-
-If ``HF_TOKEN`` is unset, the fallback is disabled and a local-generation failure
-surfaces as an ``error`` event — never a silent switch to a different model.
+Used only when local generation exceeds ``local_timeout_s`` or errors. Requires
+``HF_TOKEN`` (Kai's is HF Pro). The response is marked ``generator:
+"hosted-fallback"`` so the UI can show it — the brief forbids failing silently to
+a different model. If ``HF_TOKEN`` is unset the fallback is disabled and a local
+failure surfaces as an error, never a silent swap.
 """
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator
 
-from app.api.schemas import Audience
-from app.generation.local_llm import GenerationChunk
+from app.api.schemas import Audience, GeneratorKind
+from app.generation.base import GeneratedAnswer, GenerationDelta, ProseStreamer, parse_answer
+from app.generation.prompts import system_prompt, user_prompt
 from app.generation.schema import AnswerDraft
 
 
-class HostedGenerator:  # pragma: no cover - Phase 2
-    def __init__(self, model: str, provider: str, token: str) -> None:
-        raise NotImplementedError("Implemented in Phase 2 (generation + verification).")
+class HostedGenerator:
+    kind = GeneratorKind.hosted_fallback
 
-    async def stream(
-        self, question: str, context_block: str, audience: Audience
-    ) -> AsyncIterator[GenerationChunk]: ...
+    def __init__(
+        self,
+        model: str,
+        token: str,
+        *,
+        provider: str = "auto",
+        max_tokens: int = 640,
+        temperature: float = 0.3,
+    ) -> None:
+        from huggingface_hub import InferenceClient
 
-    def parse(self, raw: str) -> AnswerDraft: ...
+        self.model = model
+        self.max_tokens = max_tokens
+        self.temperature = temperature
+        self._client = InferenceClient(
+            model=model, token=token, provider=None if provider == "auto" else provider
+        )
+
+    def _messages(self, question: str, context_block: str, audience: Audience) -> list[dict]:
+        return [
+            {"role": "system", "content": system_prompt(audience)},
+            {"role": "user", "content": user_prompt(question, context_block)},
+        ]
+
+    def _blocking_complete(self, messages: list[dict]) -> str:
+        resp = self._client.chat_completion(
+            messages,
+            max_tokens=self.max_tokens,
+            temperature=self.temperature,
+            response_format={"type": "json_object"},
+        )
+        return resp.choices[0].message.content or ""
+
+    async def collect(
+        self,
+        question: str,
+        context_block: str,
+        audience: Audience,
+        *,
+        deadline: float | None = None,
+    ) -> GeneratedAnswer:
+        loop = asyncio.get_running_loop()
+        messages = self._messages(question, context_block, audience)
+        warnings: list[str] = []
+        try:
+            raw = await loop.run_in_executor(None, self._blocking_complete, messages)
+        except Exception as exc:
+            return GeneratedAnswer(
+                draft=AnswerDraft(prose="(hosted fallback is unavailable)"),
+                generator=self.kind,
+                raw="",
+                prose_streamed="",
+                error=f"{type(exc).__name__}: {exc}",
+                warnings=[f"hosted call failed: {exc}"],
+            )
+        streamer = ProseStreamer()
+        streamer.feed(raw)
+        try:
+            draft = parse_answer(raw)
+        except (ValueError, KeyError) as exc:
+            warnings.append(f"parse failed: {exc}")
+            draft = AnswerDraft(prose=streamer.prose.strip() or "(no readable answer)")
+        return GeneratedAnswer(
+            draft=draft,
+            generator=self.kind,
+            raw=raw,
+            prose_streamed=streamer.prose,
+            warnings=warnings,
+        )
+
+    async def astream(
+        self,
+        question: str,
+        context_block: str,
+        audience: Audience,
+        *,
+        deadline: float | None = None,
+    ) -> AsyncIterator[GenerationDelta]:
+        answer = await self.collect(question, context_block, audience)
+        self.last = answer
+        if answer.draft.prose:
+            yield GenerationDelta(prose_delta=answer.draft.prose)
+        yield GenerationDelta(done=True)

@@ -25,6 +25,7 @@ def settings(tmp_path: Path) -> Settings:
         max_question_chars=400,
         cors_origins=["http://localhost:5173"],
         hf_token=None,
+        eager_model_load=False,
     )
 
 

@@ -1,0 +1,3241 @@
+{
+  "stage": "generation",
+  "model": "base",
+  "generated": "2026-09-05T20:03:06+00:00",
+  "git_sha": "e17fa62",
+  "corpus_version": "2026-09-05",
+  "base_gguf": "qwen2.5-1.5b-instruct-q4_k_m.gguf",
+  "hosted_model": "Qwen/Qwen2.5-7B-Instruct",
+  "llm_temperature": 0.3,
+  "local_timeout_s": 25.0,
+  "n_questions": 76,
+  "runs": 1,
+  "variance": {
+    "unsupported_plus_fabricated_per_100": {
+      "mean": 56.58,
+      "min": 56.578947368421055,
+      "max": 56.578947368421055
+    },
+    "citation_hit_rate": {
+      "mean": 0.94,
+      "min": 0.9375,
+      "max": 0.9375
+    },
+    "supported_rate": {
+      "mean": 0.42,
+      "min": 0.425,
+      "max": 0.425
+    },
+    "latency_p50_ms": {
+      "mean": 14219,
+      "min": 14219,
+      "max": 14219
+    },
+    "latency_p95_ms": {
+      "mean": 28014,
+      "min": 28014,
+      "max": 28014
+    },
+    "hosted_fallback_rate": {
+      "mean": 0.07,
+      "min": 0.06578947368421052,
+      "max": 0.06578947368421052
+    }
+  },
+  "runs_detail": [
+    {
+      "n_answers": 76,
+      "n_claims": 80,
+      "claims_per_answer": 1.05,
+      "answers_with_no_claims": 0,
+      "label_distribution": {
+        "supported": 34,
+        "unsupported": 38,
+        "fabricated_citation": 5,
+        "contradicted": 3
+      },
+      "supported_rate": 0.425,
+      "citation_hit_rate": 0.9375,
+      "unsupported_plus_fabricated_per_100": 56.578947368421055,
+      "contradicted_per_100": 3.9473684210526314,
+      "bad_claims_per_100": 60.526315789473685,
+      "numeric_violations_per_100": 3.9473684210526314,
+      "hosted_fallback_rate": 0.06578947368421052,
+      "decline_on_negatives": 0.4,
+      "false_decline_on_answerable": 0.0,
+      "latency_ms": {
+        "p50": 14219,
+        "p95": 28014,
+        "mean": 14385
+      },
+      "generation_ms": {
+        "p50": 14014,
+        "p95": 27687
+      },
+      "mean_prose_chars": 269
+    }
+  ],
+  "last_run_rows": [
+    {
+      "id": "prof-who",
+      "category": "profile",
+      "answerable": true,
+      "question": "Who is Kai and what is his background?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 554,
+      "prose": "Archit Sharma, known as Kai, is an AI/ML engineer with a Master's degree in Artificial Intelligence and Machine Learning from TU Darmstadt. He holds a Bachelor's degree in Computer Science and Engineering with a specialization in AI/ML/Robotics. Kai has co-founded a university tech club and has held leadership roles. He is looking for full-time roles in AI/ML engineering, causal inference, and applied generative AI. He is also seeking working-student (Werkstudent) roles that accommodate writing a master's thesis, and he is based in Germany, Hessen.",
+      "latency_ms": 21093,
+      "generation_ms": 20827,
+      "verification_ms": 218,
+      "wall_s": 21.09,
+      "retrieved": [
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+      ],
+      "claims": [
+        {
+          "text": "Archit Sharma is an AI/ML engineer with a Master's degree in Artificial Intelligence and Machine Learning from TU Darmstadt, and a Bachelor's degree in Computer Science and Engineering with a specialization in AI/ML/Robotics. He has co-founded a university tech club and has held leadership roles.",
+          "cite": [
+            "kai-profile#who-kai-is"
+          ],
+          "label": "supported",
+          "entailment": 0.7833,
+          "contradiction": 0.1762,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "prof-identity",
+      "category": "profile",
+      "answerable": true,
+      "question": "What is Kai's core technical identity?",
+      "declined": false,
+      "generator": "hosted-fallback",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 197,
+      "prose": "Kai's core technical identity revolves around causal inference and probabilistic graphical models, with a strong focus on their application in generative AI and neuro-symbolic hybrid architectures.",
+      "latency_ms": 28014,
+      "generation_ms": 27906,
+      "verification_ms": 77,
+      "wall_s": 28.01,
+      "retrieved": [
+        "kai-profile#core-technical-identity",
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic"
+      ],
+      "claims": [
+        {
+          "text": "Kai's core technical identity is centered on causal inference and probabilistic graphical models, with an emphasis on their application in generative AI and neuro-symbolic hybrid architectures.",
+          "cite": [
+            "kai-profile#core-technical-identity"
+          ],
+          "label": "unsupported",
+          "entailment": 0.2061,
+          "contradiction": 0.1788,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "prof-role",
+      "category": "profile",
+      "answerable": true,
+      "question": "What kind of role is Kai looking for?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 202,
+      "prose": "Kai is looking for full-time AI/ML engineering, causal inference, or applied generative AI roles, as well as Werkstudent roles compatible with writing a master's thesis. He is based in Germany (Hessen).",
+      "latency_ms": 12032,
+      "generation_ms": 11875,
+      "verification_ms": 125,
+      "wall_s": 12.05,
+      "retrieved": [
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "kai-profile#the-portfolio-site",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+      ],
+      "claims": [
+        {
+          "text": "Kai is looking for full-time AI/ML engineering, causal inference, or applied generative AI roles, as well as Werkstudent roles compatible with writing a master's thesis.",
+          "cite": [
+            "recruiter-faq#what-kind-of-role-is-kai-looking-for"
+          ],
+          "label": "supported",
+          "entailment": 0.9931,
+          "contradiction": 0.0008,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "prof-philosophy",
+      "category": "profile",
+      "answerable": true,
+      "question": "What is Kai's design philosophy for building systems?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 549,
+      "prose": "Kai's design philosophy emphasizes a clean separation of concerns, where deterministic logic owns state and decisions, while learned models handle perception and language. Systems that reason explicitly are easier to audit, extend, and trust, whether the input is a sentence, an image, or an environment observation. This principle is visible across Kai's portfolio, including Threadfall (engine decides, LLM narrates), fons iuris (retrieval + verification constrain the LLM), and evidentia (Bayesian network reasoning trace instead of a black box).",
+      "latency_ms": 16452,
+      "generation_ms": 16312,
+      "verification_ms": 108,
+      "wall_s": 16.47,
+      "retrieved": [
+        "kai-profile#design-philosophy",
+        "kai-profile#who-kai-is",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#positioning-in-kai-s-own-words-from-the-portfolio-site",
+        "recruiter-faq#what-is-kai-s-strongest-area"
+      ],
+      "claims": [
+        {
+          "text": "Kai's design philosophy emphasizes a clean separation of concerns, where deterministic logic owns state and decisions, while learned models handle perception and language.",
+          "cite": [
+            "kai-profile#design-philosophy"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0568,
+          "contradiction": 0.1691,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "prof-site",
+      "category": "profile",
+      "answerable": true,
+      "question": "Tell me about Kai's portfolio website.",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 333,
+      "prose": "Kai's portfolio website is built with Vite + React + Tailwind, and it showcases his projects through an interactive causal DAG. The hero section highlights the skills connected to each project node, mirroring the do-operator. The website's sections include About, Selected Work (projects), Experience, Focus (expertise), and Contact.",
+      "latency_ms": 12687,
+      "generation_ms": 12531,
+      "verification_ms": 125,
+      "wall_s": 12.69,
+      "retrieved": [
+        "kai-profile#who-kai-is",
+        "kai-profile#the-portfolio-site",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for"
+      ],
+      "claims": [
+        {
+          "text": "Kai's portfolio website is built with Vite + React + Tailwind, and it showcases his projects through an interactive causal DAG.",
+          "cite": [
+            "kai-profile#the-portfolio-site"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0163,
+          "contradiction": 0.169,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "prof-location",
+      "category": "profile",
+      "answerable": true,
+      "question": "Where is Kai based?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 61,
+      "prose": "Kai is based in Germany, specifically in the state of Hessen.",
+      "latency_ms": 7266,
+      "generation_ms": 7125,
+      "verification_ms": 109,
+      "wall_s": 7.27,
+      "retrieved": [
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+      ],
+      "claims": [
+        {
+          "text": "Kai is based in Germany, specifically in the state of Hessen.",
+          "cite": [
+            "kai-profile#who-kai-is"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0808,
+          "contradiction": 0.0021,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "prof-study",
+      "category": "profile",
+      "answerable": true,
+      "question": "What is Kai studying right now?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 148,
+      "prose": "Kai is currently studying causal inference and probabilistic graphical models applied to real systems, combined with production LLM/RAG engineering.",
+      "latency_ms": 8452,
+      "generation_ms": 8297,
+      "verification_ms": 108,
+      "wall_s": 8.45,
+      "retrieved": [
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "recruiter-faq#does-kai-just-take-techniques-from-papers-or-actually-evaluate-them"
+      ],
+      "claims": [
+        {
+          "text": "Kai is currently studying causal inference and probabilistic graphical models applied to real systems, combined with production LLM/RAG engineering.",
+          "cite": [
+            "kai-profile#what-kai-is-looking-for"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0107,
+          "contradiction": 0.025,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "prof-strongest",
+      "category": "profile",
+      "answerable": true,
+      "question": "What is Kai's strongest area?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 206,
+      "prose": "Kai's strongest area is causal inference and probabilistic graphical models applied to real systems, combined with production-level language model (LLM) and retrieval-Augmented Generation (RAG) engineering.",
+      "latency_ms": 12062,
+      "generation_ms": 11891,
+      "verification_ms": 140,
+      "wall_s": 12.06,
+      "retrieved": [
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#does-kai-just-take-techniques-from-papers-or-actually-evaluate-them"
+      ],
+      "claims": [
+        {
+          "text": "Kai's strongest area is causal inference and probabilistic graphical models applied to real systems, combined with production-level language model (LLM) and retrieval-Augmented Generation (RAG) engineering.",
+          "cite": [
+            "recruiter-faq#what-is-kai-s-strongest-area"
+          ],
+          "label": "unsupported",
+          "entailment": 0.357,
+          "contradiction": 0.053,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "exp-effigo",
+      "category": "experience",
+      "answerable": true,
+      "question": "What did Kai do at EffiGO Global?",
+      "declined": false,
+      "generator": "hosted-fallback",
+      "n_claims": 2,
+      "labels": [
+        "fabricated_citation",
+        "fabricated_citation"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 2,
+      "citation_hits": 0,
+      "prose_chars": 332,
+      "prose": "At EffiGO Global, Kai built NLP-based document-generation pipelines that automated the creation of RFQs, contracts, and procurement documents, reducing document generation time from hours to seconds. Kai also deployed these pipelines on multiple cloud platforms and integrated them with MLOps for continuous training and monitoring.",
+      "latency_ms": 28156,
+      "generation_ms": 28125,
+      "verification_ms": 0,
+      "wall_s": 28.16,
+      "retrieved": [
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "experience#product-engineer-intern-effigo-global-bengaluru-india-feb-2024-may-2024"
+      ],
+      "claims": [
+        {
+          "text": "Kai built NLP-based document-generation pipelines at EffiGO Global, automating RFQs, contracts, and procurement documents.",
+          "cite": [
+            "experience#product-engineer-effigo-global-hyd-jun-2024-jul-2025"
+          ],
+          "label": "fabricated_citation",
+          "entailment": 0.0,
+          "contradiction": 0.0,
+          "numeric_flag": false
+        },
+        {
+          "text": "Kai deployed these pipelines on Google Cloud Vertex AI, Amazon Bedrock, AWS SageMaker, and integrated them with MLOps for continuous training and monitoring.",
+          "cite": [
+            "experience#product-engineer-effigo-global-hyd-jun-2024-jul-2025"
+          ],
+          "label": "fabricated_citation",
+          "entailment": 0.0,
+          "contradiction": 0.0,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "exp-production",
+      "category": "experience",
+      "answerable": true,
+      "question": "Has Kai deployed machine learning to production, or is it all academic projects?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 304,
+      "prose": "Kai has deployed machine learning to production, specifically on Gemini and Amazon Titan, across GCP, AWS, and Azure. He built production generative-AI document pipelines that were deployed on Vertex AI, Bedrock, and SageMaker, with an MLOps lifecycle for versioning, monitoring, and continuous training.",
+      "latency_ms": 11983,
+      "generation_ms": 11812,
+      "verification_ms": 139,
+      "wall_s": 11.98,
+      "retrieved": [
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "kai-profile#what-kai-is-looking-for",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#positioning-in-kai-s-own-words-from-the-portfolio-site",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for"
+      ],
+      "claims": [
+        {
+          "text": "Kai has deployed machine learning to production.",
+          "cite": [
+            "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic"
+          ],
+          "label": "unsupported",
+          "entailment": 0.2385,
+          "contradiction": 0.0075,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "exp-cloud",
+      "category": "experience",
+      "answerable": true,
+      "question": "What cloud platforms has Kai worked with professionally?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 55,
+      "prose": "Kai has worked with GCP, AWS, and Azure professionally.",
+      "latency_ms": 7891,
+      "generation_ms": 7764,
+      "verification_ms": 93,
+      "wall_s": 7.91,
+      "retrieved": [
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#the-portfolio-site",
+        "kai-profile#positioning-in-kai-s-own-words-from-the-portfolio-site"
+      ],
+      "claims": [
+        {
+          "text": "Kai has worked with GCP, AWS, and Azure.",
+          "cite": [
+            "kai-profile#the-portfolio-site"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0002,
+          "contradiction": 0.0009,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "exp-axisray",
+      "category": "experience",
+      "answerable": true,
+      "question": "What did Kai work on at Axisray?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "contradicted"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 369,
+      "prose": "Kai worked on document generation pipelines at Axisray, replacing manual drafting of RFQs, contracts, and vendor documents with NLP-based document-generation pipelines. This initiative streamlined the procurement and supply-chain teams, reducing the time spent on document drafting from hours to seconds and enabling scalable deployment across multiple cloud providers.",
+      "latency_ms": 13312,
+      "generation_ms": 12952,
+      "verification_ms": 344,
+      "wall_s": 13.33,
+      "retrieved": [
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "kai-profile#the-portfolio-site"
+      ],
+      "claims": [
+        {
+          "text": "Kai worked on document generation pipelines at Axisray, replacing manual drafting of RFQs, contracts, and vendor documents with NLP-based document-generation pipelines.",
+          "cite": [
+            "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+          ],
+          "label": "contradicted",
+          "entailment": 0.0095,
+          "contradiction": 0.9703,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "exp-intern",
+      "category": "experience",
+      "answerable": true,
+      "question": "Did Kai intern at EffiGO before his full-time role there?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "fabricated_citation"
+      ],
+      "numeric_flags": 1,
+      "fabricated": 1,
+      "citation_hits": 0,
+      "prose_chars": 86,
+      "prose": "Yes, Kai interned at EffiGO Global in Bengaluru, India from February 2024 to May 2024.",
+      "latency_ms": 10843,
+      "generation_ms": 10812,
+      "verification_ms": 0,
+      "wall_s": 10.84,
+      "retrieved": [
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is",
+        "experience#product-engineer-intern-effigo-global-bengaluru-india-feb-2024-may-2024",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for"
+      ],
+      "claims": [
+        {
+          "text": "Kai interned at EffiGO Global in Bengaluru, India from February 2024 to May 2024.",
+          "cite": [
+            "experience#product-engineer-intern-effigo_global_bengaluru_india_feb_2024_may_2024"
+          ],
+          "label": "fabricated_citation",
+          "entailment": 0.0,
+          "contradiction": 0.0,
+          "numeric_flag": true
+        }
+      ]
+    },
+    {
+      "id": "exp-intern-what",
+      "category": "experience",
+      "answerable": true,
+      "question": "What did Kai build during his EffiGO internship?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "fabricated_citation"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 1,
+      "citation_hits": 0,
+      "prose_chars": 511,
+      "prose": "During his EffiGO internship, Kai built a chatbot for automated query resolution using intent classification and response generation, which deflected a significant share of repetitive support tickets. He also developed an OCR-based invoice-processing pipeline that extracted line items, amounts, and vendor details from scanned documents and matched them against purchase orders, eliminating manual data entry from accounts payable. The stack used was Python, Spring Boot, OCR, NLP, and RESTful APIs, with Java.",
+      "latency_ms": 18921,
+      "generation_ms": 18875,
+      "verification_ms": 0,
+      "wall_s": 18.92,
+      "retrieved": [
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "tech-stack-map#technology-project-map",
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "experience#product-engineer-intern-effigo-global-bengaluru-india-feb-2024-may-2024"
+      ],
+      "claims": [
+        {
+          "text": "Kai built a chatbot for automated query resolution using intent classification and response generation, which deflected a significant share of repetitive support tickets.",
+          "cite": [
+            "experience#product-engineer-intern-effigo_global_bengaluru_india_feb_2024_may_2024"
+          ],
+          "label": "fabricated_citation",
+          "entailment": 0.0,
+          "contradiction": 0.0,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "exp-ocr",
+      "category": "experience",
+      "answerable": true,
+      "question": "Has Kai worked with OCR or document extraction?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 559,
+      "prose": "Kai has collaborated on NLP-based document-generation pipelines that produce structured RFQs, contracts, and procurement documents from unstructured inputs, replacing manual drafting end to end. The document generation process went from hours to seconds, and the MLOps lifecycle kept models fresh across multiple cloud regions. Kai also built production generative-AI document pipelines on Gemini and Amazon Titan, deployed on Vertex AI, Bedrock, and SageMaker across GCP/AWS/Azure, with an MLOps lifecycle for versioning, monitoring, and continuous training.",
+      "latency_ms": 18094,
+      "generation_ms": 17672,
+      "verification_ms": 375,
+      "wall_s": 18.09,
+      "retrieved": [
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#does-kai-just-take-techniques-from-papers-or-actually-evaluate-them",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "kai-profile#who-kai-is",
+        "fons-iuris#pipeline"
+      ],
+      "claims": [
+        {
+          "text": "Kai has collaborated on NLP-based document-generation pipelines that produce structured RFQs, contracts, and procurement documents from unstructured inputs, replacing manual drafting end to end.",
+          "cite": [
+            "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+          ],
+          "label": "supported",
+          "entailment": 0.5898,
+          "contradiction": 0.0146,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "exp-genai-prod",
+      "category": "experience",
+      "answerable": true,
+      "question": "Which generative AI models has Kai used in production?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 264,
+      "prose": "Kai has used generative AI models on Gemini and Amazon Titan in production. He built document-generation pipelines and generative AI applications on these platforms, integrating LLM layers into production workflows for contract automation and vendor communication.",
+      "latency_ms": 12030,
+      "generation_ms": 11656,
+      "verification_ms": 327,
+      "wall_s": 12.03,
+      "retrieved": [
+        "kai-profile#what-kai-is-looking-for",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "kai-profile#positioning-in-kai-s-own-words-from-the-portfolio-site",
+        "kai-profile#core-technical-identity",
+        "kai-profile#who-kai-is"
+      ],
+      "claims": [
+        {
+          "text": "Kai has used generative AI models on Gemini and Amazon Titan in production.",
+          "cite": [
+            "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+          ],
+          "label": "supported",
+          "entailment": 0.979,
+          "contradiction": 0.0024,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "skill-causal",
+      "category": "skills",
+      "answerable": true,
+      "question": "How strong is Kai at causal inference and probabilistic graphical models?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 346,
+      "prose": "Kai is strong in causal inference and probabilistic graphical models, with a focus on real-world applications. He has contributed to several projects that utilize these techniques, including Causeway, Threadfall, pharmacausal, and evidentia, which demonstrate his expertise in causal discovery, structural equation fitting, and effect estimation.",
+      "latency_ms": 14219,
+      "generation_ms": 14014,
+      "verification_ms": 172,
+      "wall_s": 14.22,
+      "retrieved": [
+        "skills#causal-inference-probabilistic-graphical-models",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "kai-profile#core-technical-identity",
+        "causeway#the-problem-it-solves",
+        "causeway#theory-implemented-as-documented-in-the-readme",
+        "causeway#key-decisions-and-why"
+      ],
+      "claims": [
+        {
+          "text": "Kai has contributed to several projects that utilize causal inference and probabilistic graphical models.",
+          "cite": [
+            "skills#causal-inference-probabilistic-graphical-models"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0053,
+          "contradiction": 0.0003,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "skill-genai",
+      "category": "skills",
+      "answerable": true,
+      "question": "What generative AI and NLP skills does Kai have?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 417,
+      "prose": "Kai has extensive experience in building systems that reason, not just generate. He has worked on NLP pipelines, generative AI on Gemini and Amazon Titan, computer vision with CNNs and ViTs, reinforcement learning for sequential decision-making, and MLOps across GCP, AWS, and Azure. Kai has also collaborated on React and Spring Boot frontends, embedding AI chatbot and conversational interfaces into the product UI.",
+      "latency_ms": 14375,
+      "generation_ms": 14203,
+      "verification_ms": 141,
+      "wall_s": 14.38,
+      "retrieved": [
+        "skills#generative-ai-nlp",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is",
+        "kai-profile#positioning-in-kai-s-own-words-from-the-portfolio-site",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for"
+      ],
+      "claims": [
+        {
+          "text": "Kai has extensive experience in building systems that reason, not just generate.",
+          "cite": [
+            "skills#generative-ai-nlp"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0035,
+          "contradiction": 0.001,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "skill-rl",
+      "category": "skills",
+      "answerable": true,
+      "question": "Does Kai have reinforcement learning experience?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 184,
+      "prose": "Kai has experience in reinforcement learning, including policy gradient (PPO, A3C), Q-learning, DQN, model-based RL, causal RL and planning, reward shaping, and model-based approaches.",
+      "latency_ms": 11952,
+      "generation_ms": 11797,
+      "verification_ms": 108,
+      "wall_s": 11.95,
+      "retrieved": [
+        "skills#reinforcement-learning",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is",
+        "kai-profile#positioning-in-kai-s-own-words-from-the-portfolio-site",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+      ],
+      "claims": [
+        {
+          "text": "Kai has experience in reinforcement learning, including policy gradient (PPO, A3C), Q-learning, DQN, model-based RL, causal RL and planning, reward shaping, and model-based approaches.",
+          "cite": [
+            "skills#reinforcement-learning"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0788,
+          "contradiction": 0.0012,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "skill-frontend",
+      "category": "skills",
+      "answerable": true,
+      "question": "What is Kai's frontend ability like?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 328,
+      "prose": "Kai is skilled in React, Tailwind, Vite, and Cytoscape graph UIs, with a focus on SSE streaming consumption and mobile-responsive layouts. His frontend portfolio site showcases an interactive causal DAG, highlighting the do-operator effect in real-time. The site is built with Vite + React + Tailwind, and is deployed on Vercel.",
+      "latency_ms": 12985,
+      "generation_ms": 12812,
+      "verification_ms": 141,
+      "wall_s": 12.99,
+      "retrieved": [
+        "recruiter-faq#frontend-ability",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#the-portfolio-site",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#does-kai-just-take-techniques-from-papers-or-actually-evaluate-them"
+      ],
+      "claims": [
+        {
+          "text": "Kai is skilled in React, Tailwind, Vite, Cytoscape graph UIs, SSE streaming consumption, and mobile-responsive layouts.",
+          "cite": [
+            "recruiter-faq#frontend-ability"
+          ],
+          "label": "supported",
+          "entailment": 0.0408,
+          "contradiction": 0.0015,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "skill-ways",
+      "category": "skills",
+      "answerable": true,
+      "question": "How does Kai approach engineering decisions and tradeoffs?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 646,
+      "prose": "Kai approaches engineering decisions and tradeoffs by adhering to a clean separation of concerns principle. Systems that reason explicitly are easier to audit, extend, and trust, whether the input is a sentence, an image, or an environment observation. This principle is evident in his portfolio projects like Threadfall (engine decides, LLM narrates), fons iuris (retrieval + verification constrain the LLM), and evidentia (Bayesian network reasoning trace instead of a black box). The portfolio showcases his expertise in causal inference and probabilistic graphical models applied to real systems, combined with production LLM/RAG engineering.",
+      "latency_ms": 18717,
+      "generation_ms": 18546,
+      "verification_ms": 125,
+      "wall_s": 18.72,
+      "retrieved": [
+        "kai-profile#what-kai-is-looking-for",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "kai-profile#design-philosophy"
+      ],
+      "claims": [
+        {
+          "text": "Kai approaches engineering decisions and tradeoffs by adhering to a clean separation of concerns principle, systems that reason explicitly are easier to audit, extend, and trust.",
+          "cite": [
+            "kai-profile#design-philosophy"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0372,
+          "contradiction": 0.0027,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "skill-cv",
+      "category": "skills",
+      "answerable": true,
+      "question": "Does Kai have computer vision experience?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 215,
+      "prose": "Kai has computer vision experience, as evidenced by his expertise in CNNs, ResNet, ViT, image classification and embedding, feature extraction, multimodal grounding, document understanding, and image-text retrieval.",
+      "latency_ms": 9094,
+      "generation_ms": 8967,
+      "verification_ms": 94,
+      "wall_s": 9.11,
+      "retrieved": [
+        "skills#computer-vision",
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for"
+      ],
+      "claims": [
+        {
+          "text": "Kai has computer vision experience.",
+          "cite": [
+            "skills#computer-vision"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0008,
+          "contradiction": 0.0002,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "skill-recsys",
+      "category": "skills",
+      "answerable": true,
+      "question": "What recommender systems experience does Kai have?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 293,
+      "prose": "Kai has experience with recommender systems, specifically NeuMF, which is a GMF + MLP fusion model trained on MovieLens 25M with negative sampling and HR@10/NDCG@10 evaluation. This experience includes a serving-time NLP intent layer and a memory reduction via lazy embedding lookup technique.",
+      "latency_ms": 14453,
+      "generation_ms": 14281,
+      "verification_ms": 141,
+      "wall_s": 14.45,
+      "retrieved": [
+        "recruiter-faq#recommender-systems-experience",
+        "skills#recommender-systems",
+        "kai-profile#what-kai-is-looking-for",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#what-is-kai-s-strongest-area"
+      ],
+      "claims": [
+        {
+          "text": "Kai has experience with recommender systems, specifically NeuMF, which is a GMF + MLP fusion model trained on MovieLens 25M with negative sampling and HR@10/NDCG@10 evaluation.",
+          "cite": [
+            "recruiter-faq#recommender-systems-experience"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0011,
+          "contradiction": 0.0003,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "skill-mlops",
+      "category": "skills",
+      "answerable": true,
+      "question": "What MLOps and deployment experience does Kai have?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 694,
+      "prose": "Kai has experience in deploying MLOps and production document generation pipelines on Gemini and Amazon Titan, using Vertex AI, Bedrock, and SageMaker across GCP, AWS, and Azure. He has also built production generative-AI document pipelines on Gemini and Amazon Titan, deployed on Vertex AI, Bedrock, and SageMaker across GCP/AWS/Azure, with an MLOps lifecycle for versioning, monitoring, and continuous training. The deployment includes serverless and containerised microservices, multi-cloud architecture, and an AI chatbot and conversational interface. The MLOps lifecycle includes versioning, monitoring, and continuous training, and the deployment includes backend and frontend components.",
+      "latency_ms": 19827,
+      "generation_ms": 19468,
+      "verification_ms": 327,
+      "wall_s": 19.83,
+      "retrieved": [
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is",
+        "fons-iuris#deployment",
+        "skills#mlops-engineering"
+      ],
+      "claims": [
+        {
+          "text": "Kai has experience in deploying MLOps and production document generation pipelines on Gemini and Amazon Titan.",
+          "cite": [
+            "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+          ],
+          "label": "supported",
+          "entailment": 0.7123,
+          "contradiction": 0.034,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "proj-fons",
+      "category": "project_overview",
+      "answerable": true,
+      "question": "What is fons iuris?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 539,
+      "prose": "fons iuris is a production RAG design, embedding-model selection, retrieval evaluation, structured LLM outputs, NLI-based hallucination detection, legal-text parsing, FastAPI, React/TypeScript, Docker, CI, cost/abuse controls, honest reporting of variance and limitations, and deployment. It solves the problem of LLM hallucinating specific clause numbers and legal requirements when asked about GDPR/AI Act compliance by using a deterministic causal engine, structured LLM outputs, NLI-based detection, and structured citation generation.",
+      "latency_ms": 19687,
+      "generation_ms": 19514,
+      "verification_ms": 125,
+      "wall_s": 19.69,
+      "retrieved": [
+        "fons-iuris#skills-demonstrated",
+        "fons-iuris#deployment",
+        "fons-iuris#the-problem-it-solves",
+        "fons-iuris#evaluation-methodology-and-results",
+        "fons-iuris#pipeline",
+        "fons-iuris#key-decisions-and-why"
+      ],
+      "claims": [
+        {
+          "text": "fons iuris is a production RAG design, embedding-model selection, retrieval evaluation, structured LLM outputs, NLI-based hallucination detection, legal-text parsing, FastAPI, React/TypeScript, Docker, CI, cost/abuse controls, honest reporting of variance and limitations, and deployment.",
+          "cite": [
+            "fons-iuris#skills-demonstrated"
+          ],
+          "label": "supported",
+          "entailment": 0.0272,
+          "contradiction": 0.0041,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "proj-thread",
+      "category": "project_overview",
+      "answerable": true,
+      "question": "What is Threadfall?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 143,
+      "prose": "Threadfall is a solo narrative RPG where the causal engine decides story outcomes and the language model narrates them based on those outcomes.",
+      "latency_ms": 9343,
+      "generation_ms": 9203,
+      "verification_ms": 108,
+      "wall_s": 9.34,
+      "retrieved": [
+        "threadfall#api",
+        "threadfall#one-line-summary",
+        "threadfall#rag-inside-threadfall",
+        "threadfall#engineering-and-reliability-work-from-the-changelog-v0-4-v1-1",
+        "threadfall#the-problem-it-solves",
+        "threadfall#core-design-principle"
+      ],
+      "claims": [
+        {
+          "text": "Threadfall is a solo narrative RPG where the causal engine decides story outcomes and the language model narrates them based on those outcomes.",
+          "cite": [
+            "threadfall#one-line-summary"
+          ],
+          "label": "unsupported",
+          "entailment": 0.243,
+          "contradiction": 0.0657,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "proj-cause",
+      "category": "project_overview",
+      "answerable": true,
+      "question": "What is Causeway?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 439,
+      "prose": "Causeway is a complete Python framework for structural causal modeling, causal discovery, counterfactual reasoning, effect estimation, and interactive graph visualisation grounded in Pearl's do-calculus and the Potential Outcomes framework. It provides a solution for finding causal relationships in data, from raw data to structural equations fitting, and includes features like interactive interventions and a Dash app for visualisation.",
+      "latency_ms": 14562,
+      "generation_ms": 14437,
+      "verification_ms": 93,
+      "wall_s": 14.58,
+      "retrieved": [
+        "causeway#one-line-summary",
+        "causeway#the-problem-it-solves",
+        "causeway#key-decisions-and-why",
+        "causeway#relationship-to-other-projects",
+        "causeway#what-it-does-end-to-end",
+        "causeway#sample-datasets-1-000-rows-each"
+      ],
+      "claims": [
+        {
+          "text": "Causeway is a complete Python framework for structural causal modeling, causal discovery, counterfactual reasoning, effect estimation, and interactive graph visualisation grounded in Pearl's do-calculus and the Potential Outcomes framework.",
+          "cite": [
+            "causeway#one-line-summary"
+          ],
+          "label": "supported",
+          "entailment": 0.9939,
+          "contradiction": 0.0009,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "proj-evid",
+      "category": "project_overview",
+      "answerable": true,
+      "question": "What does evidentia do?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 4,
+      "labels": [
+        "unsupported",
+        "supported",
+        "unsupported",
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 4,
+      "prose_chars": 301,
+      "prose": "evidentia is a medical diagnostic tool built as a Bayesian network over the DDXPlus dataset. It offers an explainable symptom checker with exact inference, probabilistic calibration, and careful dataset forensics. The tool supports incremental graph updates in the UI and honest calibration reporting.",
+      "latency_ms": 23516,
+      "generation_ms": 23031,
+      "verification_ms": 452,
+      "wall_s": 23.52,
+      "retrieved": [
+        "evidentia#the-problem-it-solves",
+        "evidentia#one-line-summary",
+        "evidentia#key-decisions-and-why",
+        "evidentia#skills-demonstrated",
+        "evidentia#how-it-works",
+        "evidentia#data"
+      ],
+      "claims": [
+        {
+          "text": "evidentia is a medical diagnostic tool built as a Bayesian network over the DDXPlus dataset.",
+          "cite": [
+            "evidentia#the-problem-it-solves"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0014,
+          "contradiction": 0.0004,
+          "numeric_flag": false
+        },
+        {
+          "text": "evidentia is an explainable symptom checker built as a Bayesian network over the DDXPlus dataset.",
+          "cite": [
+            "evidentia#one-line-summary"
+          ],
+          "label": "supported",
+          "entailment": 0.9971,
+          "contradiction": 0.0006,
+          "numeric_flag": false
+        },
+        {
+          "text": "evidentia is a tool that offers an explainable symptom checker with exact inference, probabilistic calibration, and careful dataset forensics.",
+          "cite": [
+            "evidentia#key-decisions-and-why"
+          ],
+          "label": "unsupported",
+          "entailment": 0.2849,
+          "contradiction": 0.0563,
+          "numeric_flag": false
+        },
+        {
+          "text": "evidentia is a tool that supports incremental graph updates in the UI and honest calibration reporting.",
+          "cite": [
+            "evidentia#key-decisions-and-why"
+          ],
+          "label": "supported",
+          "entailment": 0.9724,
+          "contradiction": 0.0012,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "proj-pharma",
+      "category": "project_overview",
+      "answerable": true,
+      "question": "What is pharmacausal about?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 1,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 292,
+      "prose": "pharmacausal is a project that uses constraint-based causal discovery (PC and FCI) over 422,458 FDA adverse-event reports to surface drug\u2192event hypotheses that survive confounder adjustment, validated against SIDER, and explicitly about exactly where FAERS breaks the algorithms' assumptions.",
+      "latency_ms": 16218,
+      "generation_ms": 16031,
+      "verification_ms": 140,
+      "wall_s": 16.22,
+      "retrieved": [
+        "pharmacausal#skills-demonstrated",
+        "pharmacausal#the-problem-it-solves",
+        "pharmacausal#one-line-summary",
+        "pharmacausal#feature-engineering-422-458-143",
+        "pharmacausal#pipeline",
+        "pharmacausal#validation-against-sider-not-drugbank"
+      ],
+      "claims": [
+        {
+          "text": "pharmacausal is a project that uses constraint-based causal discovery (PC and FCI) over 422,458 FDA adverse-event reports to surface drug\u2192event hypotheses that survive confounder adjustment, validated against SIDER, and explicitly about exactly where FAERS breaks the algorithms' assumptions.",
+          "cite": [
+            "pharmacausal#one-line-summary"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0581,
+          "contradiction": 0.0398,
+          "numeric_flag": true
+        }
+      ]
+    },
+    {
+      "id": "proj-neumf",
+      "category": "project_overview",
+      "answerable": true,
+      "question": "What is the NeuMF movie recommender?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 444,
+      "prose": "The NeuMF movie recommender is a deep-learning-based recommender system that extends conventional methods by incorporating genre awareness and natural-language intent. It uses Neural Matrix Factorization (NeuMF) with a genre-aware projection inside the MLP to capture both linear and non-linear user-item interactions. The model is trained on MovieLens datasets and supports automatic format detection, making it versatile for various datasets.",
+      "latency_ms": 13875,
+      "generation_ms": 13750,
+      "verification_ms": 93,
+      "wall_s": 13.88,
+      "retrieved": [
+        "neumf-recommender#one-line-summary",
+        "neumf-recommender#the-problem-it-solves",
+        "neumf-recommender#skills-demonstrated",
+        "neumf-recommender#system-components",
+        "neumf-recommender#key-decisions-and-why",
+        "neumf-recommender#model"
+      ],
+      "claims": [
+        {
+          "text": "The NeuMF movie recommender is a deep-learning-based recommender system that extends conventional methods by incorporating genre awareness and natural-language intent.",
+          "cite": [
+            "neumf-recommender#one-line-summary"
+          ],
+          "label": "supported",
+          "entailment": 0.8379,
+          "contradiction": 0.0165,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "proj-loan",
+      "category": "project_overview",
+      "answerable": true,
+      "question": "Tell me about Kai's loan approval project.",
+      "declined": false,
+      "generator": "hosted-fallback",
+      "n_claims": 2,
+      "labels": [
+        "unsupported",
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 2,
+      "prose_chars": 304,
+      "prose": "Kai built a dataset and model for loan approval prediction, addressing class imbalance and publishing a well-documented, real-world dataset with a reproducible preprocessing pipeline. Kai also benchmarked six classifiers, providing transparency on their performance with precision, recall, and F1 scores.",
+      "latency_ms": 28953,
+      "generation_ms": 28187,
+      "verification_ms": 735,
+      "wall_s": 28.95,
+      "retrieved": [
+        "loan-approval-kaggle#context",
+        "loan-approval-kaggle#skills-demonstrated",
+        "loan-approval-kaggle#two-artifacts",
+        "kai-profile#what-kai-is-looking-for",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#who-kai-is"
+      ],
+      "claims": [
+        {
+          "text": "Kai built a dataset and model for loan approval prediction, addressing class imbalance and publishing a well-documented, real-world dataset with a reproducible preprocessing pipeline.",
+          "cite": [
+            "loan-approval-kaggle#context",
+            "loan-approval-kaggle#two-artifacts"
+          ],
+          "label": "unsupported",
+          "entailment": 0.3921,
+          "contradiction": 0.0067,
+          "numeric_flag": false
+        },
+        {
+          "text": "Kai benchmarked six classifiers, providing transparency on their performance with precision, recall, and F1 scores.",
+          "cite": [
+            "loan-approval-kaggle#two-artifacts"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0206,
+          "contradiction": 0.0014,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-fons-verify",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "How does fons iuris check that a generated claim is actually grounded in its citation?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 328,
+      "prose": "fons iuris checks that a generated claim is actually grounded in its citation by using an NLI cross-encoder to verify that the cited text supports the claim. Long premises are split along real point boundaries, and when a citation spans several points, the relevant ones are pre-selected by embedding similarity before NLI runs.",
+      "latency_ms": 18483,
+      "generation_ms": 17937,
+      "verification_ms": 514,
+      "wall_s": 18.48,
+      "retrieved": [
+        "fons-iuris#one-line-summary",
+        "fons-iuris#evaluation-methodology-and-results",
+        "fons-iuris#key-decisions-and-why",
+        "fons-iuris#the-problem-it-solves",
+        "fons-iuris#pipeline",
+        "fons-iuris#stage-by-stage-design-and-the-reasoning-behind-each-choice"
+      ],
+      "claims": [
+        {
+          "text": "fons iuris checks that a generated claim is actually grounded in its citation by using an NLI cross-encoder to verify that the cited text supports the claim.",
+          "cite": [
+            "fons-iuris#evaluation-methodology-and-results"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0563,
+          "contradiction": 0.0633,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-fons-eval",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "What retrieval evaluation numbers does fons iuris report?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 297,
+      "prose": "fons iuris reports retrieval evaluation numbers at paragraph level (`hit_rate@5`, strict) and article level (looser), with a citation hit rate on generation. The most recent full run achieved 97.2% article-level retrieval hit rate, 88.9% paragraph-level, and 90.9% citation hit rate on generation.",
+      "latency_ms": 16266,
+      "generation_ms": 15687,
+      "verification_ms": 531,
+      "wall_s": 16.27,
+      "retrieved": [
+        "fons-iuris#evaluation-methodology-and-results",
+        "fons-iuris#skills-demonstrated",
+        "fons-iuris#the-problem-it-solves",
+        "fons-iuris#deployment",
+        "fons-iuris#key-decisions-and-why",
+        "fons-iuris#pipeline"
+      ],
+      "claims": [
+        {
+          "text": "fons iuris reports 97.2% article-level retrieval hit rate, 88.9% paragraph-level, and 90.9% citation hit rate on generation.",
+          "cite": [
+            "fons-iuris#evaluation-methodology-and-results"
+          ],
+          "label": "unsupported",
+          "entailment": 0.4525,
+          "contradiction": 0.061,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-fons-embed",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "Why did fons iuris choose nomic-embed-text instead of a 512-token embedder?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "fabricated_citation"
+      ],
+      "numeric_flags": 1,
+      "fabricated": 1,
+      "citation_hits": 0,
+      "prose_chars": 203,
+      "prose": "fons iuris chose nomic-embed-text instead of a 512-token embedder because it was measured that a 512-token model (BGE-base) truncated 1.7% of chunks, silently dropping over half of the longest paragraph.",
+      "latency_ms": 19656,
+      "generation_ms": 19609,
+      "verification_ms": 0,
+      "wall_s": 19.66,
+      "retrieved": [
+        "fons-iuris#stage-by-stage-design-and-the-reasoning-behind-each-choice",
+        "fons-iuris#deployment",
+        "fons-iuris#pipeline",
+        "fons-iuris#skills-demonstrated",
+        "fons-iuris#key-decisions-and-why",
+        "fons-iuris#evaluation-methodology-and-results"
+      ],
+      "claims": [
+        {
+          "text": "fons iuris chose nomic-embed-text because it was measured that a 512-token model (BGE-base) truncated 1.7% of chunks, silently dropping over half of the longest paragraph.",
+          "cite": [
+            "fons-iuris#stage-by-stage-design-and-the-reasoning-behind-each-choice#2"
+          ],
+          "label": "fabricated_citation",
+          "entailment": 0.0,
+          "contradiction": 0.0,
+          "numeric_flag": true
+        }
+      ]
+    },
+    {
+      "id": "det-fons-revert",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "What did fons iuris try in retrieval and then remove?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 89,
+      "prose": "fons iuris tried breadcrumb context and recital de-prioritisation, but then removed them.",
+      "latency_ms": 14625,
+      "generation_ms": 14093,
+      "verification_ms": 484,
+      "wall_s": 14.62,
+      "retrieved": [
+        "fons-iuris#the-problem-it-solves",
+        "fons-iuris#evaluation-methodology-and-results",
+        "fons-iuris#skills-demonstrated",
+        "fons-iuris#pipeline",
+        "fons-iuris#key-decisions-and-why",
+        "fons-iuris#stage-by-stage-design-and-the-reasoning-behind-each-choice"
+      ],
+      "claims": [
+        {
+          "text": "fons iuris tried breadcrumb context and recital de-prioritisation, but then removed them.",
+          "cite": [
+            "fons-iuris#stage-by-stage-design-and-the-reasoning-behind-each-choice"
+          ],
+          "label": "unsupported",
+          "entailment": 0.428,
+          "contradiction": 0.0654,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-thread-halluc",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "How does Threadfall stop the language model from hallucinating the story?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 436,
+      "prose": "In Threadfall, the language model (LLM) is restricted to narrating what the causal engine has already determined, ensuring that the story does not hallucinate. The causal engine decides the outcome, and the LLM only narrates the pre-determined facts provided by the engine, such as the probability of an event and its causal consequences. This approach guarantees reproducibility, interpretability, and audibility of the story outcomes.",
+      "latency_ms": 15608,
+      "generation_ms": 15453,
+      "verification_ms": 125,
+      "wall_s": 15.61,
+      "retrieved": [
+        "threadfall#the-problem-it-solves",
+        "threadfall#core-design-principle",
+        "threadfall#llm-narrator",
+        "threadfall#one-line-summary",
+        "threadfall#rag-inside-threadfall",
+        "threadfall#key-decisions-and-why"
+      ],
+      "claims": [
+        {
+          "text": "In Threadfall, the language model is restricted to narrating what the causal engine has already determined, ensuring that the story does not hallucinate.",
+          "cite": [
+            "threadfall#core-design-principle"
+          ],
+          "label": "supported",
+          "entailment": 0.9956,
+          "contradiction": 0.0015,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-thread-pipeline",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "What are the steps in Threadfall's per-action pipeline?",
+      "declined": false,
+      "generator": "hosted-fallback",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 630,
+      "prose": "Threadfall's per-action pipeline consists of nine steps: first, classifying the player text into one of the canonical action types using a verb-first weighted keyword classifier; second, mapping the action type to an ability stat; third, computing the success probability with a sigmoid function and compressing the probabilities; fourth, sampling the outcome with a seeded RNG; fifth, performing graph surgery with DAG.do(); sixth, running a Bayesian Network belief update; seventh, advancing the act if a milestone completes; eighth, having the LLM narrate from pre-determined facts; and ninth, checking if the campaign is over.",
+      "latency_ms": 29281,
+      "generation_ms": 28718,
+      "verification_ms": 531,
+      "wall_s": 29.28,
+      "retrieved": [
+        "threadfall#how-it-works-the-action-pipeline-9-steps-per-player-input",
+        "threadfall#engineering-and-reliability-work-from-the-changelog-v0-4-v1-1",
+        "threadfall#rag-inside-threadfall",
+        "threadfall#api",
+        "threadfall#pearl-s-causal-hierarchy-in-the-engine",
+        "threadfall#the-campaign-graph"
+      ],
+      "claims": [
+        {
+          "text": "Threadfall's per-action pipeline includes nine steps: classifying player text, mapping to an ability stat, computing success probability, sampling the outcome, performing graph surgery, running Bayesian Network belief update, advancing the act if a milestone completes, LLM narrating, and checking if the campaign is over.",
+          "cite": [
+            "threadfall#how-it-works-the-action-pipeline-9-steps-per-player-input"
+          ],
+          "label": "supported",
+          "entailment": 0.9421,
+          "contradiction": 0.0194,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-thread-graph",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "How big is Threadfall's campaign graph?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 111,
+      "prose": "Threadfall's campaign graph consists of 20 nodes and 26 edges, representing 5 acts and various milestone nodes.",
+      "latency_ms": 11500,
+      "generation_ms": 10953,
+      "verification_ms": 515,
+      "wall_s": 11.5,
+      "retrieved": [
+        "threadfall#the-campaign-graph",
+        "threadfall#engineering-and-reliability-work-from-the-changelog-v0-4-v1-1",
+        "threadfall#llm-narrator",
+        "threadfall#the-problem-it-solves",
+        "threadfall#skills-demonstrated",
+        "threadfall#one-line-summary"
+      ],
+      "claims": [
+        {
+          "text": "Threadfall's campaign graph has 20 nodes and 26 edges, representing 5 acts and milestone nodes.",
+          "cite": [
+            "threadfall#the-campaign-graph"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0278,
+          "contradiction": 0.0284,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-thread-llm",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "Which LLM does Threadfall use for narration?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "contradicted"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 148,
+      "prose": "Threadfall uses a deterministic causal engine for narration, with the language model restricted to narrating what the engine has already determined.",
+      "latency_ms": 9264,
+      "generation_ms": 9016,
+      "verification_ms": 217,
+      "wall_s": 9.26,
+      "retrieved": [
+        "threadfall#llm-narrator",
+        "threadfall#the-problem-it-solves",
+        "threadfall#one-line-summary",
+        "threadfall#core-design-principle",
+        "threadfall#key-decisions-and-why",
+        "threadfall#skills-demonstrated"
+      ],
+      "claims": [
+        {
+          "text": "Threadfall uses a deterministic causal engine for narration, with the language model restricted to narrating what the engine has already determined.",
+          "cite": [
+            "threadfall#llm-narrator"
+          ],
+          "label": "contradicted",
+          "entailment": 0.164,
+          "contradiction": 0.6802,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-thread-tests",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "How many unit tests does Threadfall have?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 65,
+      "prose": "Threadfall has 64 unit tests across dag / character / classifier.",
+      "latency_ms": 10703,
+      "generation_ms": 10421,
+      "verification_ms": 250,
+      "wall_s": 10.7,
+      "retrieved": [
+        "threadfall#engineering-and-reliability-work-from-the-changelog-v0-4-v1-1",
+        "threadfall#skills-demonstrated",
+        "threadfall#llm-narrator",
+        "threadfall#rag-inside-threadfall",
+        "threadfall#the-campaign-graph",
+        "threadfall#api"
+      ],
+      "claims": [
+        {
+          "text": "Threadfall has 64 unit tests across dag / character / classifier.",
+          "cite": [
+            "threadfall#engineering-and-reliability-work-from-the-changelog-v0-4-v1-1"
+          ],
+          "label": "supported",
+          "entailment": 0.9961,
+          "contradiction": 0.0009,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-cause-discovery",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "What causal discovery algorithms does Causeway implement?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 86,
+      "prose": "Causeway implements causal discovery algorithms such as PC, NOTEARS, and DirectLiNGAM.",
+      "latency_ms": 9156,
+      "generation_ms": 9000,
+      "verification_ms": 110,
+      "wall_s": 9.16,
+      "retrieved": [
+        "causeway#the-problem-it-solves",
+        "causeway#what-it-does-end-to-end",
+        "causeway#one-line-summary",
+        "causeway#relationship-to-other-projects",
+        "causeway#skills-demonstrated",
+        "causeway#key-decisions-and-why"
+      ],
+      "claims": [
+        {
+          "text": "Causeway implements causal discovery algorithms such as PC, NOTEARS, and DirectLiNGAM.",
+          "cite": [
+            "causeway#relationship-to-other-projects"
+          ],
+          "label": "unsupported",
+          "entailment": 0.1091,
+          "contradiction": 0.0331,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-cause-image",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "How does Causeway handle images and multimodal data?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 434,
+      "prose": "Causeway supports the following encoders for multimodal data:\n\n- `TabularEncoder` (StandardScaler + OHE + PCA)\n- `TextEncoder` (SBERT, TF-IDF+SVD fallback)\n- `ImageEncoder` (ResNet18/50 features, histogram fallback)\n- `TimeSeriesEncoder` (ROCKET, statistical-feature fallback)\n\nCauseway also supports multimodal fusion strategies such as concat, mean, and attention. The fused features feed the same discovery and estimation pipeline.",
+      "latency_ms": 17687,
+      "generation_ms": 17531,
+      "verification_ms": 125,
+      "wall_s": 17.7,
+      "retrieved": [
+        "causeway#multimodal-support",
+        "causeway#key-decisions-and-why",
+        "causeway#what-it-does-end-to-end",
+        "causeway#the-interactive-app-dash-dash-cytoscape-python-visualize-py-port-8050",
+        "causeway#one-line-summary",
+        "causeway#the-problem-it-solves"
+      ],
+      "claims": [
+        {
+          "text": "Causeway supports encoders for images and multimodal data, including ResNet18/50 features, histogram fallback, and ROCKET features.",
+          "cite": [
+            "causeway#multimodal-support"
+          ],
+          "label": "supported",
+          "entailment": 0.7185,
+          "contradiction": 0.1338,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-evid-data",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "What dataset does evidentia use?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 180,
+      "prose": "evidentia uses the DDXPlus dataset, which is a public dataset (CC BY 4.0, Figshare) of synthetic patient profiles with symptoms/antecedents and ground-truth differential diagnoses.",
+      "latency_ms": 11343,
+      "generation_ms": 10968,
+      "verification_ms": 343,
+      "wall_s": 11.34,
+      "retrieved": [
+        "evidentia#data",
+        "evidentia#one-line-summary",
+        "evidentia#skills-demonstrated",
+        "evidentia#the-problem-it-solves",
+        "evidentia#key-decisions-and-why",
+        "evidentia#how-it-works"
+      ],
+      "claims": [
+        {
+          "text": "evidentia uses the DDXPlus dataset.",
+          "cite": [
+            "evidentia#data"
+          ],
+          "label": "supported",
+          "entailment": 0.9968,
+          "contradiction": 0.0007,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-evid-calib",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "How well calibrated is evidentia's Bayesian network?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 217,
+      "prose": "Evidentia's Bayesian network is calibrated, as evidenced by its Brier score of 0.0156, ECE of 0.0036, and reliability diagrams showing a gap between 0.01 and 0.42 ECE, indicating a real calibration quality difference.",
+      "latency_ms": 13952,
+      "generation_ms": 13500,
+      "verification_ms": 406,
+      "wall_s": 13.95,
+      "retrieved": [
+        "evidentia#skills-demonstrated",
+        "evidentia#key-decisions-and-why",
+        "evidentia#the-problem-it-solves",
+        "evidentia#calibration-evaluation-full-held-out-test-split-134-529-patients",
+        "evidentia#one-line-summary",
+        "evidentia#how-it-works"
+      ],
+      "claims": [
+        {
+          "text": "Evidentia's Bayesian network is calibrated.",
+          "cite": [
+            "evidentia#calibration-evaluation-full-held-out-test-split-134-529-patients"
+          ],
+          "label": "supported",
+          "entailment": 0.7053,
+          "contradiction": 0.0192,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-evid-size",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "How large is evidentia's Bayesian network?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "contradicted"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 116,
+      "prose": "evidentia's Bayesian network has 895 nodes, demonstrating its capability to handle complex medical diagnostic tools.",
+      "latency_ms": 8609,
+      "generation_ms": 8453,
+      "verification_ms": 125,
+      "wall_s": 8.61,
+      "retrieved": [
+        "evidentia#skills-demonstrated",
+        "evidentia#the-problem-it-solves",
+        "evidentia#key-decisions-and-why",
+        "evidentia#one-line-summary",
+        "evidentia#how-it-works",
+        "evidentia#data"
+      ],
+      "claims": [
+        {
+          "text": "evidentia's Bayesian network has 895 nodes.",
+          "cite": [
+            "evidentia#skills-demonstrated"
+          ],
+          "label": "contradicted",
+          "entailment": 0.2906,
+          "contradiction": 0.6862,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-pharma-data",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "What data does pharmacausal analyze?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 127,
+      "prose": "pharmacausal analyzes FDA FAERS adverse-event reports, specifically 422,458 canonical cases after dropping 4,217 retracted IDs.",
+      "latency_ms": 11140,
+      "generation_ms": 10938,
+      "verification_ms": 171,
+      "wall_s": 11.16,
+      "retrieved": [
+        "pharmacausal#the-problem-it-solves",
+        "pharmacausal#pipeline",
+        "pharmacausal#one-line-summary",
+        "pharmacausal#skills-demonstrated",
+        "pharmacausal#validation-against-sider-not-drugbank",
+        "pharmacausal#testing-and-reproducibility"
+      ],
+      "claims": [
+        {
+          "text": "pharmacausal analyzes FDA FAERS adverse-event reports, specifically 422,458 canonical cases after dropping 4,217 retracted IDs.",
+          "cite": [
+            "pharmacausal#pipeline"
+          ],
+          "label": "supported",
+          "entailment": 0.9548,
+          "contradiction": 0.0056,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-pharma-results",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "What did pharmacausal actually find?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 180,
+      "prose": "pharmacausal found drug\u2192event hypotheses that survived confounder adjustment, validated against SIDER, and explicitly stated exactly where FAERS breaks the algorithms' assumptions.",
+      "latency_ms": 11813,
+      "generation_ms": 11671,
+      "verification_ms": 110,
+      "wall_s": 11.81,
+      "retrieved": [
+        "pharmacausal#the-problem-it-solves",
+        "pharmacausal#skills-demonstrated",
+        "pharmacausal#discovery-assumptions-stated-plainly",
+        "pharmacausal#one-line-summary",
+        "pharmacausal#pipeline",
+        "pharmacausal#validation-against-sider-not-drugbank"
+      ],
+      "claims": [
+        {
+          "text": "pharmacausal found drug\u2192event hypotheses that survived confounder adjustment, validated against SIDER, and explicitly stated exactly where FAERS breaks the algorithms' assumptions.",
+          "cite": [
+            "pharmacausal#one-line-summary"
+          ],
+          "label": "supported",
+          "entailment": 0.9632,
+          "contradiction": 0.0069,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-pharma-valid",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "How was pharmacausal validated?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 121,
+      "prose": "Pharmacausal was validated against SIDER using a method that separates coverage and precision, ensuring honest reporting.",
+      "latency_ms": 9531,
+      "generation_ms": 9155,
+      "verification_ms": 344,
+      "wall_s": 9.53,
+      "retrieved": [
+        "pharmacausal#validation-against-sider-not-drugbank",
+        "pharmacausal#skills-demonstrated",
+        "pharmacausal#pipeline",
+        "pharmacausal#testing-and-reproducibility",
+        "pharmacausal#the-problem-it-solves",
+        "pharmacausal#one-line-summary"
+      ],
+      "claims": [
+        {
+          "text": "Pharmacausal was validated against SIDER using a method that separates coverage and precision.",
+          "cite": [
+            "pharmacausal#validation-against-sider-not-drugbank"
+          ],
+          "label": "supported",
+          "entailment": 0.8514,
+          "contradiction": 0.0089,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-pharma-hard",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "Why is FAERS data hard to run causal discovery on?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 246,
+      "prose": "FAERS data is hard to run causal discovery on because it lacks an unexposed comparison population and selection into the dataset is a collider. The data has missing data and is not fully normalized, making it difficult to estimate causal effects.",
+      "latency_ms": 12812,
+      "generation_ms": 12453,
+      "verification_ms": 312,
+      "wall_s": 12.81,
+      "retrieved": [
+        "pharmacausal#data-realities-faers",
+        "pharmacausal#discovery-assumptions-stated-plainly",
+        "pharmacausal#one-line-summary",
+        "tech-stack-map#datasets-and-external-sources-used",
+        "pharmacausal#pipeline",
+        "evidentia#data"
+      ],
+      "claims": [
+        {
+          "text": "FAERS data lacks an unexposed comparison population and selection into the dataset is a collider.",
+          "cite": [
+            "pharmacausal#data-realities-faers"
+          ],
+          "label": "supported",
+          "entailment": 0.9744,
+          "contradiction": 0.0059,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-neumf-mem",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "What was the memory optimization in the NeuMF recommender?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 246,
+      "prose": "The memory optimization in the NeuMF recommender reduced the amount of memory used from 86.8 GB to 485 MB by storing only item indices and removing the intent vector. This 99.4% reduction in memory usage was achieved without any performance loss.",
+      "latency_ms": 14250,
+      "generation_ms": 14077,
+      "verification_ms": 141,
+      "wall_s": 14.25,
+      "retrieved": [
+        "neumf-recommender#engineering-highlight-the-memory-fix",
+        "neumf-recommender#skills-demonstrated",
+        "neumf-recommender#key-decisions-and-why",
+        "neumf-recommender#model",
+        "neumf-recommender#nlp-intent-system-serving-time",
+        "neumf-recommender#the-problem-it-solves"
+      ],
+      "claims": [
+        {
+          "text": "The memory optimization in the NeuMF recommender reduced the amount of memory used from 86.8 GB to 485 MB by storing only item indices and removing the intent vector.",
+          "cite": [
+            "neumf-recommender#engineering-highlight-the-memory-fix"
+          ],
+          "label": "supported",
+          "entailment": 0.9884,
+          "contradiction": 0.004,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-neumf-intent",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "How does the NeuMF recommender handle natural-language mood queries?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 368,
+      "prose": "The NeuMF recommender handles natural-language mood queries by serving time, which involves embedding the query, computing genre centroids, steering the query towards top-k most similar genre centroids, pulling it away from the bottom-k, and applying keyword-aware boosting to affect detection. This process is detailed in the NLP intent system section of the summary.",
+      "latency_ms": 17217,
+      "generation_ms": 16625,
+      "verification_ms": 561,
+      "wall_s": 17.22,
+      "retrieved": [
+        "neumf-recommender#one-line-summary",
+        "neumf-recommender#nlp-intent-system-serving-time",
+        "neumf-recommender#key-decisions-and-why",
+        "neumf-recommender#model",
+        "neumf-recommender#the-problem-it-solves",
+        "neumf-recommender#skills-demonstrated"
+      ],
+      "claims": [
+        {
+          "text": "The NeuMF recommender handles natural-language mood queries by serving time, which involves embedding the query, computing genre centroids, steering the query towards top-k most similar genre centroids, pulling it away from the bottom-k, and applying keyword-aware boosting to affect detection.",
+          "cite": [
+            "neumf-recommender#nlp-intent-system-serving-time"
+          ],
+          "label": "unsupported",
+          "entailment": 0.103,
+          "contradiction": 0.1467,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "det-neumf-model",
+      "category": "project_detail",
+      "answerable": true,
+      "question": "What model architecture does NeuMF use?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 549,
+      "prose": "NeuMF uses a model architecture that fuses two branches: GMF (Generalized Matrix Factorization) and MLP (Multi-layer Perceptron). GMF performs elementwise product of user and item embeddings, while MLP concatenates user embedding, item embedding, a projected multi-hot genre vector, and an optional intent tower. The final output is a linear activation followed by a sigmoid function. NeuMF is trained using binary cross-entropy and negative sampling with 4 negatives per positive, using Adam optimizer, and evaluated with HR@10 and NDCG@10 metrics.",
+      "latency_ms": 20719,
+      "generation_ms": 20172,
+      "verification_ms": 500,
+      "wall_s": 20.72,
+      "retrieved": [
+        "neumf-recommender#model",
+        "neumf-recommender#key-decisions-and-why",
+        "neumf-recommender#engineering-highlight-the-memory-fix",
+        "neumf-recommender#skills-demonstrated",
+        "neumf-recommender#system-components",
+        "neumf-recommender#nlp-intent-system-serving-time"
+      ],
+      "claims": [
+        {
+          "text": "NeuMF uses a model architecture that fuses GMF and MLP, with GMF performing elementwise product of user and item embeddings and MLP concatenating user embedding, item embedding, a projected multi-hot genre vector, and an optional intent tower.",
+          "cite": [
+            "neumf-recommender#model"
+          ],
+          "label": "supported",
+          "entailment": 0.9884,
+          "contradiction": 0.0021,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "cross-bn",
+      "category": "cross_project",
+      "answerable": true,
+      "question": "Which of Kai's projects use Bayesian networks?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 86,
+      "prose": "Kai's projects that use Bayesian networks include Threadfall, evidentia, and Causeway.",
+      "latency_ms": 10108,
+      "generation_ms": 9953,
+      "verification_ms": 108,
+      "wall_s": 10.11,
+      "retrieved": [
+        "recruiter-faq#which-projects-use-bayesian-networks-specifically",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic"
+      ],
+      "claims": [
+        {
+          "text": "Kai's projects that use Bayesian networks include Threadfall, evidentia, and Causeway.",
+          "cite": [
+            "recruiter-faq#which-projects-use-bayesian-networks-specifically"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0037,
+          "contradiction": 0.0018,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "cross-vecdb",
+      "category": "cross_project",
+      "answerable": true,
+      "question": "Which of Kai's projects use a vector database?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 66,
+      "prose": "The projects that use a vector database are EffiGO and Threadfall.",
+      "latency_ms": 16500,
+      "generation_ms": 15889,
+      "verification_ms": 578,
+      "wall_s": 16.5,
+      "retrieved": [
+        "tech-stack-map#technology-project-map",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#what-kai-is-looking-for",
+        "tech-stack-map#recurring-architectural-patterns",
+        "kai-profile#who-kai-is",
+        "tech-stack-map#datasets-and-external-sources-used"
+      ],
+      "claims": [
+        {
+          "text": "EffiGO and Threadfall use a vector database.",
+          "cite": [
+            "tech-stack-map#datasets-and-external-sources-used",
+            "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+            "tech-stack-map#recurring-architectural-patterns"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0018,
+          "contradiction": 0.017,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "cross-fastapi",
+      "category": "cross_project",
+      "answerable": true,
+      "question": "Where has Kai used FastAPI?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 72,
+      "prose": "Kai has used FastAPI in the projects Threadfall, fons iuris, and EffiGO.",
+      "latency_ms": 18531,
+      "generation_ms": 17860,
+      "verification_ms": 625,
+      "wall_s": 18.53,
+      "retrieved": [
+        "tech-stack-map#technology-project-map",
+        "tech-stack-map#recurring-architectural-patterns",
+        "fons-iuris#skills-demonstrated",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "threadfall#architecture",
+        "fons-iuris#pipeline"
+      ],
+      "claims": [
+        {
+          "text": "Kai has used FastAPI in the projects Threadfall, fons iuris, and EffiGO.",
+          "cite": [
+            "tech-stack-map#recurring-architectural-patterns",
+            "fons-iuris#skills-demonstrated",
+            "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0024,
+          "contradiction": 0.001,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "cross-chroma",
+      "category": "tech_stack",
+      "answerable": true,
+      "question": "Which projects has Kai used ChromaDB in?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 89,
+      "prose": "Kai has used ChromaDB in the projects Threadfall, fons iuris (primary index), and EffiGO.",
+      "latency_ms": 13828,
+      "generation_ms": 13156,
+      "verification_ms": 625,
+      "wall_s": 13.83,
+      "retrieved": [
+        "tech-stack-map#technology-project-map",
+        "threadfall#skills-demonstrated",
+        "tech-stack-map#recurring-architectural-patterns",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "fons-iuris#skills-demonstrated",
+        "kai-profile#what-kai-is-looking-for"
+      ],
+      "claims": [
+        {
+          "text": "Kai has used ChromaDB in the projects Threadfall, fons iuris (primary index), and EffiGO.",
+          "cite": [
+            "tech-stack-map#recurring-architectural-patterns",
+            "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+            "fons-iuris#skills-demonstrated"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0026,
+          "contradiction": 0.0017,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "cross-patterns",
+      "category": "cross_project",
+      "answerable": true,
+      "question": "What recurring architectural patterns show up across Kai's projects?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 662,
+      "prose": "Recurring architectural patterns across Kai's projects include a deterministic core and an LLM at the edge. The deterministic core and LLM at the edge pattern is exemplified by Threadfall, where the engine decides story outcomes and the LLM narrates them. The two-layer verification pattern is seen in the fons iuris project, which includes structural checks before semantic checks. The measured tradeoffs documented in the repo indicate that reverted BM25 hybrid and reranker, bounded PC, and decoupled FCI sample size were used in the pharmacausal project. Full-stack delivery is evident in the projects that use FastAPI, React, Docker, and other technologies.",
+      "latency_ms": 22264,
+      "generation_ms": 22062,
+      "verification_ms": 156,
+      "wall_s": 22.26,
+      "retrieved": [
+        "tech-stack-map#recurring-architectural-patterns",
+        "tech-stack-map#technology-project-map",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is"
+      ],
+      "claims": [
+        {
+          "text": "Recurring architectural patterns across Kai's projects include a deterministic core and an LLM at the edge.",
+          "cite": [
+            "tech-stack-map#recurring-architectural-patterns"
+          ],
+          "label": "unsupported",
+          "entailment": 0.003,
+          "contradiction": 0.0007,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "cross-rag",
+      "category": "cross_project",
+      "answerable": true,
+      "question": "Which of Kai's projects involve RAG?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 61,
+      "prose": "Kai's projects involving RAG are pharmacausal and fons iuris.",
+      "latency_ms": 8266,
+      "generation_ms": 8125,
+      "verification_ms": 109,
+      "wall_s": 8.27,
+      "retrieved": [
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "fons-iuris#skills-demonstrated",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is",
+        "kai-profile#the-portfolio-site"
+      ],
+      "claims": [
+        {
+          "text": "Kai's projects involving RAG are pharmacausal and fons iuris.",
+          "cite": [
+            "fons-iuris#skills-demonstrated"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0027,
+          "contradiction": 0.01,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "cross-datasets",
+      "category": "tech_stack",
+      "answerable": true,
+      "question": "What datasets has Kai worked with?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 270,
+      "prose": "Kai has worked with datasets such as EUR-Lex consolidated GDPR and EU AI Act HTML, FDA FAERS quarterly extracts, SIDER 4.1, DDXPlus (Figshare, English version; ~1.29M synthetic patients), MovieLens 100K and 25M, and a custom-engineered loan approval dataset from Kaggle.",
+      "latency_ms": 22030,
+      "generation_ms": 21828,
+      "verification_ms": 171,
+      "wall_s": 22.03,
+      "retrieved": [
+        "tech-stack-map#datasets-and-external-sources-used",
+        "tech-stack-map#technology-project-map",
+        "kai-profile#what-kai-is-looking-for",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#who-kai-is",
+        "tech-stack-map#recurring-architectural-patterns"
+      ],
+      "claims": [
+        {
+          "text": "Kai has worked with EUR-Lex consolidated GDPR and EU AI Act HTML, FDA FAERS quarterly extracts, SIDER 4.1, DDXPlus (Figshare, English version; ~1.29M synthetic patients), MovieLens 100K and 25M, and a custom-engineered loan approval dataset from Kaggle.",
+          "cite": [
+            "tech-stack-map#datasets-and-external-sources-used"
+          ],
+          "label": "supported",
+          "entailment": 0.0063,
+          "contradiction": 0.0002,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "cross-causallearn",
+      "category": "tech_stack",
+      "answerable": true,
+      "question": "Which projects use the causal-learn library?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 88,
+      "prose": "The projects that use the causal-learn library are Causeway, pharmacausal, and Causeway.",
+      "latency_ms": 13016,
+      "generation_ms": 12812,
+      "verification_ms": 156,
+      "wall_s": 13.02,
+      "retrieved": [
+        "causeway#skills-demonstrated",
+        "causeway#relationship-to-other-projects",
+        "tech-stack-map#technology-project-map",
+        "causeway#project-structure",
+        "causeway#the-problem-it-solves",
+        "causeway#the-interactive-app-dash-dash-cytoscape-python-visualize-py-port-8050"
+      ],
+      "claims": [
+        {
+          "text": "The projects that use the causal-learn library are Causeway, pharmacausal, and Causeway.",
+          "cite": [
+            "causeway#project-structure"
+          ],
+          "label": "unsupported",
+          "entailment": 0.4384,
+          "contradiction": 0.0695,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "cross-docker",
+      "category": "tech_stack",
+      "answerable": true,
+      "question": "Has Kai used Docker, and where?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 223,
+      "prose": "Kai used Docker in the deployment of fons iuris, which is a backend system that requires 1.3\u20131.5 GB of RAM. Docker was recommended for the backend and was used for image rebuilds and pre-warming the NLI model at build time.",
+      "latency_ms": 15108,
+      "generation_ms": 14921,
+      "verification_ms": 139,
+      "wall_s": 15.11,
+      "retrieved": [
+        "fons-iuris#deployment",
+        "tech-stack-map#recurring-architectural-patterns",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "tech-stack-map#technology-project-map",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "fons-iuris#skills-demonstrated"
+      ],
+      "claims": [
+        {
+          "text": "Kai used Docker in the deployment of fons iuris.",
+          "cite": [
+            "fons-iuris#deployment"
+          ],
+          "label": "unsupported",
+          "entailment": 0.003,
+          "contradiction": 0.0006,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "cross-react",
+      "category": "tech_stack",
+      "answerable": true,
+      "question": "Which of Kai's projects have a React frontend?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 112,
+      "prose": "The projects with a React frontend include Threadfall, fons iuris, evidentia, NeuMF, EffiGO, and portfolio site.",
+      "latency_ms": 14844,
+      "generation_ms": 14547,
+      "verification_ms": 250,
+      "wall_s": 14.86,
+      "retrieved": [
+        "tech-stack-map#technology-project-map",
+        "tech-stack-map#recurring-architectural-patterns",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#the-portfolio-site",
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for"
+      ],
+      "claims": [
+        {
+          "text": "The projects with a React frontend are Threadfall, fons iuris, evidentia, NeuMF, EffiGO, and portfolio site.",
+          "cite": [
+            "tech-stack-map#recurring-architectural-patterns",
+            "kai-profile#the-portfolio-site"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0242,
+          "contradiction": 0.0615,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "cross-demo",
+      "category": "cross_project",
+      "answerable": true,
+      "question": "Are any of Kai's projects deployed with a live demo I can try?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 4,
+      "labels": [
+        "supported",
+        "supported",
+        "supported",
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 4,
+      "prose_chars": 227,
+      "prose": "Yes, the portfolio site is live on Vercel, and the project repos are public on GitHub. The fons iuris and Threadfall projects are Dockerised and documented for deployment, with hosted demo links available on the portfolio site.",
+      "latency_ms": 18906,
+      "generation_ms": 18437,
+      "verification_ms": 437,
+      "wall_s": 18.91,
+      "retrieved": [
+        "recruiter-faq#is-there-a-live-demo-i-can-try",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#the-portfolio-site",
+        "kai-profile#who-kai-is"
+      ],
+      "claims": [
+        {
+          "text": "The portfolio site is live on Vercel.",
+          "cite": [
+            "recruiter-faq#is-there-a-live-demo-i-can-try"
+          ],
+          "label": "supported",
+          "entailment": 0.9989,
+          "contradiction": 0.0004,
+          "numeric_flag": false
+        },
+        {
+          "text": "The project repos are public on GitHub.",
+          "cite": [
+            "recruiter-faq#is-there-a-live-demo-i-can-try"
+          ],
+          "label": "supported",
+          "entailment": 0.9977,
+          "contradiction": 0.0005,
+          "numeric_flag": false
+        },
+        {
+          "text": "The fons iuris and Threadfall projects are Dockerised and documented for deployment.",
+          "cite": [
+            "recruiter-faq#is-there-a-live-demo-i-can-try"
+          ],
+          "label": "supported",
+          "entailment": 0.9967,
+          "contradiction": 0.0005,
+          "numeric_flag": false
+        },
+        {
+          "text": "Hosted demo links should be checked on the portfolio site.",
+          "cite": [
+            "recruiter-faq#is-there-a-live-demo-i-can-try"
+          ],
+          "label": "supported",
+          "entailment": 0.9973,
+          "contradiction": 0.0009,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "neg-salary",
+      "category": "negative_control",
+      "answerable": false,
+      "question": "What is Kai's expected salary?",
+      "declined": true,
+      "generator": "local-base",
+      "n_claims": 0,
+      "labels": [],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 0,
+      "prose_chars": 137,
+      "prose": "That's outside what Kai's portfolio covers, so I can't answer it here. I can talk about his projects, skills, experience, and tech stack.",
+      "latency_ms": 31,
+      "generation_ms": 0,
+      "verification_ms": 0,
+      "wall_s": 0.03,
+      "retrieved": [
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+      ],
+      "claims": []
+    },
+    {
+      "id": "neg-partner",
+      "category": "negative_control",
+      "answerable": false,
+      "question": "Does Kai have a girlfriend or partner?",
+      "declined": true,
+      "generator": "local-base",
+      "n_claims": 0,
+      "labels": [],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 0,
+      "prose_chars": 137,
+      "prose": "That's outside what Kai's portfolio covers, so I can't answer it here. I can talk about his projects, skills, experience, and tech stack.",
+      "latency_ms": 47,
+      "generation_ms": 0,
+      "verification_ms": 0,
+      "wall_s": 0.05,
+      "retrieved": [
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "threadfall#the-problem-it-solves"
+      ],
+      "claims": []
+    },
+    {
+      "id": "neg-visa",
+      "category": "negative_control",
+      "answerable": false,
+      "question": "What is Kai's visa or immigration status?",
+      "declined": true,
+      "generator": "local-base",
+      "n_claims": 0,
+      "labels": [],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 0,
+      "prose_chars": 137,
+      "prose": "That's outside what Kai's portfolio covers, so I can't answer it here. I can talk about his projects, skills, experience, and tech stack.",
+      "latency_ms": 30,
+      "generation_ms": 0,
+      "verification_ms": 0,
+      "wall_s": 0.03,
+      "retrieved": [
+        "kai-profile#what-kai-is-looking-for",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "recruiter-faq#german-language",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+      ],
+      "claims": []
+    },
+    {
+      "id": "neg-rust",
+      "category": "negative_control",
+      "answerable": false,
+      "question": "Does Kai know Rust?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 753,
+      "prose": "Archit Sharma, known as Kai, is an AI/ML engineer with a background in artificial intelligence and machine learning. He holds a BTech in Computer Science & Engineering with an AI/ML/Robotics specialisation and is based in Germany. Kai is looking for full-time roles in AI/ML engineering, causal inference, and applied generative AI. He is also seeking working-student (Werkstudent) roles that accommodate writing a master's thesis. His GitHub repositories include projects like Causeway, Threadfall, pharmacausal, and evidentia, which are all focused on causal inference and probabilistic graphical models. He has experience in production-level RAG systems, including fons iuris and evidentia, where he evaluates and reverts techniques that do not work.",
+      "latency_ms": 19547,
+      "generation_ms": 19389,
+      "verification_ms": 125,
+      "wall_s": 19.55,
+      "retrieved": [
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "recruiter-faq#does-kai-just-take-techniques-from-papers-or-actually-evaluate-them",
+        "threadfall#pearl-s-causal-hierarchy-in-the-engine",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for"
+      ],
+      "claims": [
+        {
+          "text": "Kai is an AI/ML engineer with a BTech in Computer Science & Engineering with an AI/ML/Robotics specialisation and is based in Germany.",
+          "cite": [
+            "kai-profile#who-kai-is"
+          ],
+          "label": "supported",
+          "entailment": 0.9939,
+          "contradiction": 0.0024,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "neg-k8s",
+      "category": "negative_control",
+      "answerable": false,
+      "question": "Has Kai worked with Kubernetes?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 157,
+      "prose": "Kai has worked on Kubernetes as part of the MLOps lifecycle, deploying AI pipelines on serverless and containerised microservices across GCP, AWS, and Azure.",
+      "latency_ms": 11891,
+      "generation_ms": 11531,
+      "verification_ms": 328,
+      "wall_s": 11.91,
+      "retrieved": [
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for"
+      ],
+      "claims": [
+        {
+          "text": "Kai has deployed AI pipelines on serverless and containerised microservices across GCP, AWS, and Azure.",
+          "cite": [
+            "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+          ],
+          "label": "supported",
+          "entailment": 0.9934,
+          "contradiction": 0.0009,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "neg-politics",
+      "category": "negative_control",
+      "answerable": false,
+      "question": "What are Kai's political views?",
+      "declined": true,
+      "generator": "local-base",
+      "n_claims": 0,
+      "labels": [],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 0,
+      "prose_chars": 137,
+      "prose": "That's outside what Kai's portfolio covers, so I can't answer it here. I can talk about his projects, skills, experience, and tech stack.",
+      "latency_ms": 31,
+      "generation_ms": 0,
+      "verification_ms": 0,
+      "wall_s": 0.03,
+      "retrieved": [
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "kai-profile#design-philosophy",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+      ],
+      "claims": []
+    },
+    {
+      "id": "neg-grewup",
+      "category": "negative_control",
+      "answerable": false,
+      "question": "Where did Kai grow up?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 408,
+      "prose": "Archit Sharma, known as Kai, is an AI/ML engineer with a background in Computer Science & Engineering, specializing in AI/ML/Robotics. He holds a BTech in Computer Science & Engineering and a MSc in Artificial Intelligence & Machine Learning from TU Darmstadt. Kai has co-founded a university tech club and has held leadership roles, showcasing his experience in collaborative projects and leadership skills.",
+      "latency_ms": 14422,
+      "generation_ms": 14266,
+      "verification_ms": 125,
+      "wall_s": 14.42,
+      "retrieved": [
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+      ],
+      "claims": [
+        {
+          "text": "Kai is an AI/ML engineer with a BTech in Computer Science & Engineering and a MSc in Artificial Intelligence & Machine Learning from TU Darmstadt.",
+          "cite": [
+            "kai-profile#who-kai-is"
+          ],
+          "label": "supported",
+          "entailment": 0.9938,
+          "contradiction": 0.0022,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "neg-gpa",
+      "category": "negative_control",
+      "answerable": false,
+      "question": "What is Kai's GPA?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 197,
+      "prose": "Kai is a German AI/ML engineer with a BTech in Computer Science & Engineering with an AI/ML/Robotics specialisation. He is also a co-founder of a university tech club and has held leadership roles.",
+      "latency_ms": 10437,
+      "generation_ms": 10296,
+      "verification_ms": 109,
+      "wall_s": 10.44,
+      "retrieved": [
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "recruiter-faq#does-kai-just-take-techniques-from-papers-or-actually-evaluate-them"
+      ],
+      "claims": [
+        {
+          "text": "Kai is a German AI/ML engineer with a BTech in Computer Science & Engineering with an AI/ML/Robotics specialisation.",
+          "cite": [
+            "kai-profile#who-kai-is"
+          ],
+          "label": "supported",
+          "entailment": 0.9409,
+          "contradiction": 0.0044,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "adv-thread-prod",
+      "category": "adversarial",
+      "answerable": true,
+      "question": "Did Kai deploy Threadfall to production for real users?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 53,
+      "prose": "Kai deployed Threadfall to production for real users.",
+      "latency_ms": 8733,
+      "generation_ms": 8453,
+      "verification_ms": 250,
+      "wall_s": 8.73,
+      "retrieved": [
+        "threadfall#the-problem-it-solves",
+        "threadfall#engineering-and-reliability-work-from-the-changelog-v0-4-v1-1",
+        "threadfall#api",
+        "threadfall#skills-demonstrated",
+        "threadfall#rag-inside-threadfall",
+        "threadfall#core-design-principle"
+      ],
+      "claims": [
+        {
+          "text": "Kai deployed Threadfall to production for real users.",
+          "cite": [
+            "threadfall#engineering-and-reliability-work-from-the-changelog-v0-4-v1-1"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0017,
+          "contradiction": 0.0012,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "adv-fons-users",
+      "category": "adversarial",
+      "answerable": false,
+      "question": "How many users does fons iuris have?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 33,
+      "prose": "fons iuris has not been deployed.",
+      "latency_ms": 10546,
+      "generation_ms": 10389,
+      "verification_ms": 125,
+      "wall_s": 10.55,
+      "retrieved": [
+        "fons-iuris#deployment",
+        "fons-iuris#evaluation-methodology-and-results",
+        "fons-iuris#skills-demonstrated",
+        "fons-iuris#the-problem-it-solves",
+        "fons-iuris#stage-by-stage-design-and-the-reasoning-behind-each-choice",
+        "fons-iuris#pipeline"
+      ],
+      "claims": [
+        {
+          "text": "fons iuris has not been deployed",
+          "cite": [
+            "fons-iuris#deployment"
+          ],
+          "label": "supported",
+          "entailment": 0.9902,
+          "contradiction": 0.0039,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "adv-german",
+      "category": "adversarial",
+      "answerable": true,
+      "question": "Is Kai fluent in German?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 259,
+      "prose": "Kai discloses that he is looking for full-time roles in AI/ML engineering, causal inference, and applied generative AI, as well as working-student roles compatible with writing a master's thesis. He is based in Germany and holds a German language level of A2.",
+      "latency_ms": 14485,
+      "generation_ms": 14156,
+      "verification_ms": 296,
+      "wall_s": 14.49,
+      "retrieved": [
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#german-language",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for",
+        "recruiter-faq#does-kai-just-take-techniques-from-papers-or-actually-evaluate-them",
+        "recruiter-faq#what-is-kai-s-strongest-area"
+      ],
+      "claims": [
+        {
+          "text": "Kai discloses that he is looking for full-time roles in AI/ML engineering, causal inference, and applied generative AI, as well as working-student roles compatible with writing a master's thesis. He is based in Germany and holds a German language level of A2.",
+          "cite": [
+            "kai-profile#who-kai-is",
+            "recruiter-faq#german-language"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0066,
+          "contradiction": 0.0324,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "adv-led-team",
+      "category": "adversarial",
+      "answerable": true,
+      "question": "Did Kai lead the ML team at EffiGO?",
+      "declined": false,
+      "generator": "local-base",
+      "n_claims": 1,
+      "labels": [
+        "supported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 301,
+      "prose": "Kai built production generative-AI document pipelines on Gemini and Amazon Titan, deploying on Vertex AI, Bedrock, and SageMaker across GCP/AWS/Azure, with an MLOps lifecycle for versioning, monitoring, and continuous training. This indicates that Kai was responsible for the ML team at EffiGO Global.",
+      "latency_ms": 16968,
+      "generation_ms": 16546,
+      "verification_ms": 375,
+      "wall_s": 16.97,
+      "retrieved": [
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "kai-profile#who-kai-is",
+        "recruiter-faq#has-kai-shipped-anything-to-production-or-is-it-all-academic",
+        "kai-profile#what-kai-is-looking-for",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "experience#product-engineer-intern-effigo-global-bengaluru-india-feb-2024-may-2024"
+      ],
+      "claims": [
+        {
+          "text": "Kai built production generative-AI document pipelines on Gemini and Amazon Titan, deploying on Vertex AI, Bedrock, and SageMaker across GCP/AWS/Azure, with an MLOps lifecycle for versioning, monitoring, and continuous training.",
+          "cite": [
+            "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+          ],
+          "label": "supported",
+          "entailment": 0.9138,
+          "contradiction": 0.0285,
+          "numeric_flag": false
+        }
+      ]
+    },
+    {
+      "id": "adv-best-eng",
+      "category": "adversarial",
+      "answerable": false,
+      "question": "Is Kai the best ML engineer you know?",
+      "declined": false,
+      "generator": "hosted-fallback",
+      "n_claims": 1,
+      "labels": [
+        "unsupported"
+      ],
+      "numeric_flags": 0,
+      "fabricated": 0,
+      "citation_hits": 1,
+      "prose_chars": 258,
+      "prose": "While the corpus does not provide a direct comparison of Kai against other ML engineers, Kai has extensive experience in building complex AI systems, particularly in NLP and generative AI, and has successfully scaled these systems in production environments.",
+      "latency_ms": 28031,
+      "generation_ms": 27687,
+      "verification_ms": 312,
+      "wall_s": 28.03,
+      "retrieved": [
+        "kai-profile#who-kai-is",
+        "kai-profile#what-kai-is-looking-for",
+        "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025",
+        "recruiter-faq#what-is-kai-s-strongest-area",
+        "kai-profile#positioning-in-kai-s-own-words-from-the-portfolio-site",
+        "recruiter-faq#what-kind-of-role-is-kai-looking-for"
+      ],
+      "claims": [
+        {
+          "text": "Kai has extensive experience in building complex AI systems, particularly in NLP and generative AI, and has successfully scaled these systems in production environments.",
+          "cite": [
+            "experience#product-engineer-effigo-global-hyderabad-india-jun-2024-jul-2025"
+          ],
+          "label": "unsupported",
+          "entailment": 0.0967,
+          "contradiction": 0.0034,
+          "numeric_flag": false
+        }
+      ]
+    }
+  ]
+}
