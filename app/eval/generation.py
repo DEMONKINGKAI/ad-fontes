@@ -45,6 +45,46 @@ def _percentile(values: list[float], p: float) -> float:
     return s[idx]
 
 
+def answer_row(q: dict, resp, wall: float) -> dict:
+    """The per-answer record used by both the base eval and the Phase 5 compare."""
+    fab = sum(1 for c in resp.claims if c.verification.label is ClaimLabel.fabricated_citation)
+    valid_cite = sum(
+        1 for c in resp.claims if c.verification.label is not ClaimLabel.fabricated_citation
+    )
+    return {
+        "id": q["id"],
+        "category": q["category"],
+        "answerable": q["answerable"],
+        "question": q["question"],
+        "declined": resp.declined,
+        "generator": resp.meta.generator.value,
+        "n_claims": len(resp.claims),
+        "labels": [c.verification.label.value for c in resp.claims],
+        "numeric_flags": sum(1 for c in resp.claims if c.verification.numeric_flag),
+        "fabricated": fab,
+        "citation_hits": valid_cite,
+        "prose_chars": len(resp.prose),
+        "prose": resp.prose,
+        "unverified_prose": resp.unverified_prose,
+        "latency_ms": resp.meta.latency_ms,
+        "generation_ms": resp.meta.generation_ms,
+        "verification_ms": resp.meta.verification_ms,
+        "wall_s": round(wall, 2),
+        "retrieved": resp.meta.retrieved_chunk_ids,
+        "claims": [
+            {
+                "text": c.text,
+                "cite": c.cite,
+                "label": c.verification.label.value,
+                "entailment": c.verification.entailment,
+                "contradiction": c.verification.contradiction,
+                "numeric_flag": c.verification.numeric_flag,
+            }
+            for c in resp.claims
+        ],
+    }
+
+
 async def _answer_all(
     pipeline, questions: list[dict], model: ModelChoice, *, verbose: bool = False
 ) -> list[dict]:
@@ -64,46 +104,7 @@ async def _answer_all(
                 f"{labs}  {q['id']}",
                 flush=True,
             )
-        claim_labels = [c.verification.label.value for c in resp.claims]
-        numeric_flags = sum(1 for c in resp.claims if c.verification.numeric_flag)
-        fab = sum(1 for c in resp.claims if c.verification.label is ClaimLabel.fabricated_citation)
-        valid_cite_claims = sum(
-            1 for c in resp.claims if c.verification.label is not ClaimLabel.fabricated_citation
-        )
-        rows.append(
-            {
-                "id": q["id"],
-                "category": q["category"],
-                "answerable": q["answerable"],
-                "question": q["question"],
-                "declined": resp.declined,
-                "generator": resp.meta.generator.value,
-                "n_claims": len(resp.claims),
-                "labels": claim_labels,
-                "numeric_flags": numeric_flags,
-                "fabricated": fab,
-                "citation_hits": valid_cite_claims,
-                "prose_chars": len(resp.prose),
-                "prose": resp.prose,
-                "unverified_prose": resp.unverified_prose,
-                "latency_ms": resp.meta.latency_ms,
-                "generation_ms": resp.meta.generation_ms,
-                "verification_ms": resp.meta.verification_ms,
-                "wall_s": round(wall, 2),
-                "retrieved": resp.meta.retrieved_chunk_ids,
-                "claims": [
-                    {
-                        "text": c.text,
-                        "cite": c.cite,
-                        "label": c.verification.label.value,
-                        "entailment": c.verification.entailment,
-                        "contradiction": c.verification.contradiction,
-                        "numeric_flag": c.verification.numeric_flag,
-                    }
-                    for c in resp.claims
-                ],
-            }
-        )
+        rows.append(answer_row(q, resp, wall))
     return rows
 
 

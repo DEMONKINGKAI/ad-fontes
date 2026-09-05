@@ -213,12 +213,54 @@ Judge scalar cleanly separates sources: hosted **0.93**, base **0.78**, perturb 
 
 **Full run** is Kai's to launch (~5–6 h compute, resumable): `gen_candidates --holdout all` → `judge` → `build_pairs`, then `hand_label export -n 100` for the agreement check. If judge–human agreement < 80%, revise `_JUDGE_SYSTEM` before Phase 4.
 
+## Phase 4 decisions — DPO training + GGUF export
+
+| Decision | Choice | Why |
+|---|---|---|
+| Trainer | TRL `DPOTrainer` (0.13), `DPOConfig(beta=0.1, loss_type="sigmoid")`, 1–2 epochs, cosine LR 5e-6 | Brief §6. `ref_model=None` + `peft_config` → the reference is the adapter-disabled base (no second model in VRAM). |
+| PEFT | QLoRA: 4-bit nf4 + double-quant, LoRA `r=16` on all attention + MLP projections, `paged_adamw_8bit`, gradient checkpointing | Fits Qwen2.5-1.5B training in ~10–12 GB → free T4. |
+| Resumability | checkpoints every 25 steps to `MyDrive/ad-fontes/dpo-checkpoints/` (`save_total_limit=3`); the train cell auto-detects the newest `checkpoint-*` and passes it to `trainer.train(resume_from_checkpoint=…)` | Colab sessions die (brief §2). Re-running the cell continues. |
+| Sanity check | notebook cell 5 computes `trainer.compute_ref_log_probs` on a batch and asserts the reference log-probs are finite and negative | Brief §6 — catches a dtype/padding bug before wasting a T4 session. |
+| DPO target completion | the full `{"prose": …, "claims": [...]}` JSON string (what the model emits), from `build_pairs._completion` | The tuned model must keep the served output format. |
+| Export | merge adapter into the **fp16** base (not the 4-bit model), `convert_hf_to_gguf.py` → `llama-quantize Q4_K_M` → HF Hub. Full recipe in [`app/rlhf/export_gguf.md`](app/rlhf/export_gguf.md). | Merging into a bnb-4bit model degrades quality silently. |
+| Serving | no API change needed — `AD_FONTES_TUNED_GGUF_REPO`/`_FILE` already point at the target repo. `AD_FONTES_TUNED_GGUF_PATH` added for a local GGUF (test before upload / offline). `model: "tuned"` serves it once loaded; `meta.model_requested` reports honestly. | |
+
+The exact TRL 0.13 call sequence is pinned by `tests/test_generation_backends.py::test_dpo_training_code_path` (3-step DPO on a tiny model) so an API change fails a test, not a Colab session. `train_dpo.ipynb` itself runs only on Colab (bitsandbytes needs CUDA).
+
+### Deviations from the brief (Phase 4)
+
+- No W&B by default — `report_to=[]` writes a plain `dpo-log.csv` to Drive; the notebook has a one-line note to enable W&B.
+- `bitsandbytes` is **not** in any `requirements*.txt` (CUDA-only) — it's `%pip install`ed in the notebook.
+
+## Phase 5 — base vs. tuned comparison (built; awaits the tuned GGUF)
+
+`python -m app.rlhf.compare --a base --b tuned` runs both arms through the **full
+pipeline** (`Pipeline.answer_sync(..., force_generator=…)` bypasses the base/tuned
+selection and disables the hosted fallback so each arm's own output is measured).
+
+| Piece | What |
+|---|---|
+| question set | RLHF **holdout** questions + [`app/eval/adversarial.jsonl`](app/eval/adversarial.jsonl) (**31** overclaim-bait: fake deployment/usage, verb/metric/scope inflation, unanswerable-but-plausible, false-premise, comparison) + the negative controls from `questions.jsonl` |
+| per-answer metrics | unsupported+fabricated / 100, contradicted / 100, numeric violations / 100, unverified-prose / 100, supported rate, decline-on-unanswerable, false-decline, prose length, latency p50/p95 |
+| **bootstrap 95% CI** | on `metric(B) − metric(A)`, resampling the *paired* question index N times (default 2000); a `✓` marks deltas whose CI excludes 0 in the good direction |
+| **LLM judge win rate** | blind A/B per question ("more faithful and humble; a supported short answer beats a longer one that reaches"), order randomised, reported as B-wins / decided |
+| plot | grouped bar chart (matplotlib → PNG) of the four /100 metrics |
+
+Before the tuned GGUF exists, `--a base --b hosted` is a valid stand-in that exercises every path. `--limit N` for a quick run. Adversarial-set integrity (every question has an `expected` note, gold ids resolve, false-premise questions target real corpus contradictions like the pgmpy/causal-learn and Qwen3/Qwen2.5 caveats) is pinned by `tests/test_compare.py`.
+
+### Deviations from the brief (Phase 5)
+
+- `compare.py` lives in `app/rlhf/` (brief §6 layout) but is the Phase 5 harness; `app.eval.run_eval --stage compare` still stubs out (points at it).
+- `answer_row` / summariser factored out of `app/eval/generation.py` and shared.
+
 ## Open items carried forward
 
-- Phase 3 full run + judge–human agreement check (Kai; the ~378-question set +
-  resumable scripts are in place, pilot validated).
-- Phase 5: re-tune `ENTAILMENT_THRESHOLD` etc. against the base-vs-tuned eval if
-  the label distribution warrants it; record here.
+- Phase 3 full run + judge–human agreement check (Kai; scripts + pilot in place).
+- Phase 4 training run on Colab (Kai; notebook + export recipe + code-path test
+  in place). Record real numbers in `export_gguf.md`.
+- Phase 5 real run once the tuned GGUF exists; then re-tune
+  `ENTAILMENT_THRESHOLD` etc. if the label distribution warrants it and write the
+  README results table + the base-vs-tuned figure.
 
 ## Limitations (running list)
 

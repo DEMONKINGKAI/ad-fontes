@@ -3,7 +3,7 @@
     python -m app.eval.run_eval --stage retrieval               # Phase 1
     python -m app.eval.run_eval --stage retrieval --no-boosts    # ablation
     python -m app.eval.run_eval --stage generation --model base  # Phase 2
-    python -m app.eval.run_eval --stage compare                  # Phase 5
+    python -m app.eval.run_eval --stage compare                  # Phase 5 -> app.rlhf.compare
 
 Phase 1 implements ``--stage retrieval``: it builds the real retriever (nomic
 embedder + the persisted Chroma index), runs every question, and reports hit@k at
@@ -265,7 +265,12 @@ def main(argv: list[str] | None = None) -> int:
         print(f"wrote {path}")
         return 0
 
-    print(f"stage '{args.stage}' lands in Phase 5.", file=sys.stderr)
+    if args.stage == "compare":
+        from app.rlhf.compare import main as compare_main
+
+        return compare_main(["--a", "base", "--b", "tuned"])
+
+    print(f"unknown stage {args.stage!r}", file=sys.stderr)
     return 1
 
 

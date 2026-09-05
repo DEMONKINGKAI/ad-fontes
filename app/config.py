@@ -78,6 +78,10 @@ class Settings(BaseSettings):
     base_gguf_file: str = "qwen2.5-1.5b-instruct-q4_k_m.gguf"
     tuned_gguf_repo: str = "DEMONKINGKAI/ad-fontes-generator-1.5b-dpo-gguf"
     tuned_gguf_file: str = "ad-fontes-1.5b-dpo-q4_k_m.gguf"
+    # A local GGUF path that wins over the repo download when set and present —
+    # for testing the tuned path before the Hub upload, and as an offline option.
+    tuned_gguf_path: str | None = None
+    base_gguf_path: str | None = None
     model_cache_dir: Path = _REPO_ROOT / "data" / "models"
 
     # --- Retrieval / verification models ------------------------------

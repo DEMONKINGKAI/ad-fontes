@@ -34,8 +34,8 @@ This repo is the **backend only** — a CORS-enabled, streaming HTTP API. The ch
 | 1 | Ingestion + retrieval + retrieval eval | ✅ done |
 | 2 | Generation + verification (base model) | ✅ done |
 | 3 | Preference-data pipeline (RLAIF) | ✅ pipeline built + pilot; full run pending |
-| 4 | DPO training (Colab) + GGUF export | ⬜ |
-| 5 | Evaluation: base vs. tuned, the story | ⬜ |
+| 4 | DPO training (Colab) + GGUF export | ✅ notebook + export recipe + code-path test; training run pending |
+| 5 | Evaluation: base vs. tuned, the story | ✅ harness + adversarial set built; awaits the tuned GGUF |
 | 6 | Deployment (HF Space) | ⬜ |
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the pipeline and the reasoning behind each choice.
@@ -104,6 +104,22 @@ python -m app.eval.run_eval --stage retrieval                  # Phase 1
 python -m app.eval.run_eval --stage generation --model base    # Phase 2 baseline
 python -m app.eval.run_eval --stage compare                    # Phase 5: base vs tuned
 ```
+
+### Preference data + DPO (Phases 3–4)
+
+```bash
+python -m app.rlhf.gen_questions --target 600
+python -m app.rlhf.gen_candidates --holdout all     # resumable; ~4 h local
+python -m app.rlhf.judge                            # resumable; hosted judge
+python -m app.rlhf.build_pairs                      # -> data/rlhf/pairs.jsonl (TRL DPO)
+python -m app.rlhf.report                           # perturbation detection, length bias
+python -m app.rlhf.hand_label export -n 100         # label, then: hand_label score
+```
+
+Then upload `data/rlhf/pairs.jsonl` to Drive and run
+[`app/rlhf/train_dpo.ipynb`](app/rlhf/train_dpo.ipynb) on a Colab T4 (QLoRA, resumable),
+followed by [`app/rlhf/export_gguf.md`](app/rlhf/export_gguf.md) to merge → GGUF → HF Hub.
+The API then serves it as `model: "tuned"`.
 
 ---
 
@@ -174,5 +190,11 @@ were caught by one or the other; the judge covers omission (`drop_limitation` 5/
 hosted 0.93 / base 0.78 / perturbed 0.59. The full ~378-question run (resumable) and the
 judge–human agreement check are Kai's to launch.
 
-**Phase 5** compares base vs. the DPO-tuned model with bootstrap CIs. No number here isn't
-from a run of `app/eval` or `app/rlhf`.
+**Base vs. tuned (Phase 5)** — `python -m app.rlhf.compare --a base --b tuned` runs both
+through the full pipeline over the RLHF holdout + a **31-question overclaiming-bait set**
+([`app/eval/adversarial.jsonl`](app/eval/adversarial.jsonl): fake deployments, verb/metric/scope
+inflation, false premises like "why did Kai use pgmpy in pharmacausal?" when the corpus says
+causal-learn), reports every /100 metric with **bootstrap 95% CIs on the delta**, an **LLM
+judge win rate**, and a base-vs-tuned bar chart. The harness, adversarial set, and its
+integrity tests are in place; the headline table and figure land when the tuned GGUF exists.
+No number in this README isn't from a run of `app/eval` or `app/rlhf`.

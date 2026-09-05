@@ -57,16 +57,24 @@ def load_generation(
         "grammar_mode": s.llm_grammar_mode,
     }
     components.base_generator = load_local_generator(
-        GeneratorKind.local_base, s.base_gguf_repo, s.base_gguf_file, **common
+        GeneratorKind.local_base,
+        s.base_gguf_repo,
+        s.base_gguf_file,
+        local_path=s.base_gguf_path,
+        **common,
     )
-    log.info("base generator ready: %s", s.base_gguf_file)
+    log.info("base generator ready: %s", s.base_gguf_path or s.base_gguf_file)
 
     if load_tuned:
         try:
             components.tuned_generator = load_local_generator(
-                GeneratorKind.local_tuned, s.tuned_gguf_repo, s.tuned_gguf_file, **common
+                GeneratorKind.local_tuned,
+                s.tuned_gguf_repo,
+                s.tuned_gguf_file,
+                local_path=s.tuned_gguf_path,
+                **common,
             )
-            log.info("tuned generator ready: %s", s.tuned_gguf_file)
+            log.info("tuned generator ready: %s", s.tuned_gguf_path or s.tuned_gguf_file)
         except Exception:
             log.info("tuned generator not available yet; model=tuned will serve base")
 

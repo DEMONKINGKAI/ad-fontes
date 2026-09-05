@@ -205,9 +205,14 @@ def load_local_generator(
     filename: str,
     *,
     cache_dir: str | Path | None = None,
+    local_path: str | Path | None = None,
     **kwargs,
 ) -> LocalGenerator:
-    """Download the GGUF (cached) and construct the generator."""
+    """Construct the generator from a local GGUF (``local_path``) if given and it
+    exists, otherwise download ``repo``/``filename`` from the HF Hub (cached)."""
+    if local_path and Path(local_path).is_file():
+        return LocalGenerator(kind, local_path, **kwargs)
+
     from huggingface_hub import hf_hub_download
 
     path = hf_hub_download(

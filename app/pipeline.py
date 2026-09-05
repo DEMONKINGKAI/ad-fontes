@@ -130,9 +130,12 @@ class Pipeline:
 
     # -- core ---------------------------------------------------------
 
-    async def _run(self, request: AskRequest):
+    async def _run(self, request: AskRequest, *, force_generator: Generator | None = None):
         """Yield ``(kind, payload)`` steps. ``kind`` in
-        {token, sources, claims, meta, result}."""
+        {token, sources, claims, meta, result}. ``force_generator`` bypasses the
+        base/tuned selection — used by the Phase 5 comparison to drive a specific
+        backend (including the hosted model as a stand-in before the tuned GGUF
+        exists)."""
         self._require_ready()
         t = _Timings()
         question = request.question.strip()
@@ -181,7 +184,7 @@ class Pipeline:
         yield "sources", sources
 
         context_block = format_context(retrieved)
-        generator, _ = self._pick_generator(request.model)
+        generator = force_generator or self._pick_generator(request.model)[0]
         deadline = time.monotonic() + self.settings.local_timeout_s
 
         g0 = time.monotonic()
@@ -195,7 +198,8 @@ class Pipeline:
         used_kind = answer.generator
         replaced = False
 
-        if self._needs_fallback(answer) and c.hosted_generator is not None:
+        can_fall_back = force_generator is None and c.hosted_generator is not None
+        if can_fall_back and self._needs_fallback(answer):
             hosted = await c.hosted_generator.collect(question, context_block, audience)
             if hosted.draft.prose.strip():
                 answer = hosted
@@ -235,9 +239,11 @@ class Pipeline:
 
     # -- public -----------------------------------------------------
 
-    async def answer_sync(self, request: AskRequest) -> AskResponse:
+    async def answer_sync(
+        self, request: AskRequest, *, force_generator: Generator | None = None
+    ) -> AskResponse:
         result: AskResponse | None = None
-        async for kind, payload in self._run(request):
+        async for kind, payload in self._run(request, force_generator=force_generator):
             if kind == "result":
                 result = payload
         assert result is not None
