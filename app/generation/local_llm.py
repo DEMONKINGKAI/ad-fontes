@@ -157,8 +157,8 @@ class LocalGenerator:
                 if not timed_out:
                     await worker  # normal path: thread already finished
 
-        self.last = self._finalise(streamer, timed_out, err)
-        yield GenerationDelta(done=True)
+            self.last = self._finalise(streamer, timed_out, err)
+        yield GenerationDelta(done=True, answer=self.last)
 
     def _finalise(
         self, streamer: ProseStreamer, timed_out: bool, err: BaseException | None = None
@@ -191,9 +191,12 @@ class LocalGenerator:
         *,
         deadline: float | None = None,
     ) -> GeneratedAnswer:
-        async for _ in self.astream(question, context_block, audience, deadline=deadline):
-            pass
-        return self.last
+        answer: GeneratedAnswer | None = None
+        async for delta in self.astream(question, context_block, audience, deadline=deadline):
+            if delta.answer is not None:
+                answer = delta.answer
+        assert answer is not None
+        return answer
 
 
 def load_local_generator(

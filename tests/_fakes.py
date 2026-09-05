@@ -132,7 +132,7 @@ class FakeGenerator:
             timed_out=self._timed_out,
             error=self._error,
         )
-        yield GenerationDelta(done=True)
+        yield GenerationDelta(done=True, answer=self.last)
 
     async def collect(self, question, context_block, audience, *, deadline=None):
         async for _ in self.astream(question, context_block, audience):

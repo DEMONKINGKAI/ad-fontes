@@ -31,10 +31,16 @@ _UNESCAPE = {"n": "\n", "t": "\t", "r": "\r", '"': '"', "\\": "\\", "/": "/", "b
 
 @dataclass(slots=True)
 class GenerationDelta:
-    """One streamed step. ``prose_delta`` is new user-visible text (may be empty)."""
+    """One streamed step. ``prose_delta`` is new user-visible text (may be empty).
+
+    The terminal delta (``done=True``) carries the fully parsed ``answer`` — the
+    caller reads it from here rather than from a mutable attribute on the
+    generator, which two overlapping requests could stomp.
+    """
 
     prose_delta: str = ""
     done: bool = False
+    answer: GeneratedAnswer | None = None
 
 
 @dataclass(slots=True)

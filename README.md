@@ -33,7 +33,7 @@ This repo is the **backend only** — a CORS-enabled, streaming HTTP API. The ch
 | 0 | Skeleton: layout, config, API contract, safety, Docker, CI | ✅ done |
 | 1 | Ingestion + retrieval + retrieval eval | ✅ done |
 | 2 | Generation + verification (base model) | ✅ done |
-| 3 | Preference-data pipeline (RLAIF) | ⬜ |
+| 3 | Preference-data pipeline (RLAIF) | ✅ pipeline built + pilot; full run pending |
 | 4 | DPO training (Colab) + GGUF export | ⬜ |
 | 5 | Evaluation: base vs. tuned, the story | ⬜ |
 | 6 | Deployment (HF Space) | ⬜ |
@@ -153,16 +153,26 @@ full pipeline (retrieve → base GGUF → structural + NLI + numeric verificatio
 
 | metric | base (Qwen2.5-1.5B) |
 |---|---|
-| **unsupported + fabricated claims / 100 answers** | **56.6** |
-| citation hit rate | 93.8% |
-| supported / unsupported / fabricated / contradicted (80 claims) | 34 / 38 / 5 / 3 |
-| declines the 4 denylist negatives; answers "does Kai know Rust?" with unsupported claims | 40% decline on 10 negative controls |
-| latency p50 / p95 (dev box) | 14 s / 28 s · 7% hosted-fallback |
+| **unsupported + fabricated claims / 100 answers** | **44.7** |
+| **unverified prose sentences / 100 answers** | **35.5** |
+| citation hit rate · supported rate | 93.7% · 51% |
+| supported / unsupported / fabricated / contradicted (79 claims) | 40 / 29 / 5 / 5 |
+| decline on 10 negative controls · false-decline on 66 answerable | 40% · 0% |
+| latency p50 / p95 (dev box) | 16 s / 33 s · 7% hosted-fallback |
 
-Genuine failures the layer catches: putting EffiGO's work at Axisray (*contradicted*),
+Genuine failures the layer catches: attributing EffiGO's work to Axisray (*contradicted*),
 "deployed Threadfall to production for real users" (*unsupported* — corpus says no demo),
-correct facts cited to a non-retrieved chunk (*fabricated_citation*). ~Half the *unsupported*
-labels are NLI-recall misses on legitimately-grounded summary claims — see ARCHITECTURE.md.
+correct facts cited to a non-retrieved chunk (*fabricated_citation*), "Kai has worked on
+Kubernetes" appearing only in the prose (*unverified_prose*). See ARCHITECTURE.md for the
+verification layers and the Phase 2.5 hardening that moved the headline from 56.6.
 
-**Phase 5** compares this against the DPO-tuned model with bootstrap CIs. No number here isn't
-from a run of `app/eval`.
+**Preference data (Phase 3)** — pipeline built and pilot-validated (20 questions,
+[`app/rlhf/pilot/phase3-report.md`](app/rlhf/pilot/phase3-report.md)). The verification layer
+and the LLM judge catch *different* deliberate degradations — **23/24** perturbed candidates
+were caught by one or the other; the judge covers omission (`drop_limitation` 5/5) and voice
+(`first_person` 2/2) that NLI/numeric can't see. Judge scalar separates sources cleanly:
+hosted 0.93 / base 0.78 / perturbed 0.59. The full ~378-question run (resumable) and the
+judge–human agreement check are Kai's to launch.
+
+**Phase 5** compares base vs. the DPO-tuned model with bootstrap CIs. No number here isn't
+from a run of `app/eval` or `app/rlhf`.

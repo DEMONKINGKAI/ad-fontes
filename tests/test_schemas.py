@@ -22,9 +22,11 @@ def test_ask_request_accepts_known_audiences():
     assert AskRequest(question="q", audience="engineer").audience is Audience.engineer
 
 
-def test_answer_draft_requires_citation_per_claim():
-    with pytest.raises(ValidationError):
-        AnswerDraft(prose="x", claims=[{"text": "uncited", "cite": []}])
+def test_answer_draft_tolerates_missing_citation_for_verification_to_flag():
+    # the grammar asks for >=1 cite, but the schema accepts an empty list so the
+    # structural layer can label an uncited claim `fabricated_citation`
+    d = AnswerDraft(prose="x", claims=[{"text": "uncited", "cite": []}])
+    assert d.claims[0].cite == []
 
 
 def test_answer_draft_ok():

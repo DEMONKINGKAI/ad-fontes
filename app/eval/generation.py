@@ -85,6 +85,7 @@ async def _answer_all(
                 "citation_hits": valid_cite_claims,
                 "prose_chars": len(resp.prose),
                 "prose": resp.prose,
+                "unverified_prose": resp.unverified_prose,
                 "latency_ms": resp.meta.latency_ms,
                 "generation_ms": resp.meta.generation_ms,
                 "verification_ms": resp.meta.verification_ms,
@@ -119,6 +120,8 @@ def _summarise(rows: list[dict]) -> dict:
     supported = all_labels.get("supported", 0)
     numeric_violations = sum(r["numeric_flags"] for r in rows)
     citation_hits = sum(r["citation_hits"] for r in rows)
+    prose_unverified = sum(len(r.get("unverified_prose", [])) for r in rows)
+    answers_with_unverified_prose = sum(1 for r in rows if r.get("unverified_prose"))
 
     lat = [r["latency_ms"] for r in rows]
     gen = [r["generation_ms"] for r in rows]
@@ -135,6 +138,10 @@ def _summarise(rows: list[dict]) -> dict:
         "contradicted_per_100": per_100(contradicted, n_answers),
         "bad_claims_per_100": per_100(unsupported + fabricated + contradicted, n_answers),
         "numeric_violations_per_100": per_100(numeric_violations, n_answers),
+        "prose_unverified_sentences_per_100": per_100(prose_unverified, n_answers),
+        "answers_with_unverified_prose_pct": (
+            answers_with_unverified_prose / n_answers if n_answers else 0.0
+        ),
         "hosted_fallback_rate": sum(1 for r in rows if r["generator"] == "hosted-fallback")
         / n_answers,
         "decline_on_negatives": (
@@ -212,6 +219,7 @@ def run_generation(model: str, *, runs: int, limit: int | None) -> dict:
         "runs": runs,
         "variance": {
             "unsupported_plus_fabricated_per_100": spread(["unsupported_plus_fabricated_per_100"]),
+            "prose_unverified_sentences_per_100": spread(["prose_unverified_sentences_per_100"]),
             "citation_hit_rate": spread(["citation_hit_rate"]),
             "supported_rate": spread(["supported_rate"]),
             "latency_p50_ms": spread(["latency_ms", "p50"]),
@@ -244,6 +252,7 @@ def write_reports(result: dict, out_dir: Path) -> Path:
         "| metric | mean | min | max |",
         "|--|--|--|--|",
         f"| unsupported + fabricated / 100 answers | **{v['unsupported_plus_fabricated_per_100']['mean']}** | {v['unsupported_plus_fabricated_per_100']['min']} | {v['unsupported_plus_fabricated_per_100']['max']} |",
+        f"| unverified prose sentences / 100 answers | **{v['prose_unverified_sentences_per_100']['mean']}** | {v['prose_unverified_sentences_per_100']['min']} | {v['prose_unverified_sentences_per_100']['max']} |",
         f"| citation hit rate | {v['citation_hit_rate']['mean']} | {v['citation_hit_rate']['min']} | {v['citation_hit_rate']['max']} |",
         f"| supported rate | {v['supported_rate']['mean']} | {v['supported_rate']['min']} | {v['supported_rate']['max']} |",
         f"| latency p50 (ms) | {v['latency_p50_ms']['mean']} | {v['latency_p50_ms']['min']} | {v['latency_p50_ms']['max']} |",
@@ -255,6 +264,7 @@ def write_reports(result: dict, out_dir: Path) -> Path:
         f"- label distribution: {s0['label_distribution']}",
         f"- claims/answer {s0['claims_per_answer']} · answers with no claims {s0['answers_with_no_claims']}",
         f"- contradicted/100 {s0['contradicted_per_100']:.1f} · numeric violations/100 {s0['numeric_violations_per_100']:.1f}",
+        f"- answers with ≥1 unverified prose sentence: {s0['answers_with_unverified_prose_pct']:.0%}",
         f"- decline on negatives {s0['decline_on_negatives']} · false-decline on answerable {s0['false_decline_on_answerable']}",
         f"- mean prose length {s0['mean_prose_chars']} chars",
         "",
@@ -269,6 +279,13 @@ def write_reports(result: dict, out_dir: Path) -> Path:
     ][:12]
     for r, c in bad:
         lines.append(f"- `{r['id']}` [{c['label']}] {c['text'][:140]}")
+
+    prose_flags = [
+        (r["id"], s) for r in result["last_run_rows"] for s in r.get("unverified_prose", [])
+    ][:12]
+    lines += ["", "## Unverified prose (asserted in prose, not backed by a claim or chunk)", ""]
+    for qid, sent in prose_flags:
+        lines.append(f"- `{qid}` {sent[:160]}")
 
     base.with_suffix(".md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     return base.with_suffix(".md")

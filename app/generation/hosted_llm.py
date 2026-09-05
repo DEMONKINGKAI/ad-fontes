@@ -103,4 +103,4 @@ class HostedGenerator:
         self.last = answer
         if answer.draft.prose:
             yield GenerationDelta(prose_delta=answer.draft.prose)
-        yield GenerationDelta(done=True)
+        yield GenerationDelta(done=True, answer=answer)

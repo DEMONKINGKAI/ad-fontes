@@ -31,7 +31,7 @@ from app.generation.base import GeneratedAnswer, Generator
 from app.generation.prompts import DECLINE_MESSAGE, format_context
 from app.guardrails.audience import resolve_audience
 from app.guardrails.scope import ScopeGate, ScopeVerdict
-from app.verification.verify import to_source_chunk, verify_answer
+from app.verification.verify import to_source_chunk, verify_answer, verify_prose
 
 
 class PipelineNotReadyError(RuntimeError):
@@ -162,7 +162,7 @@ class Pipeline:
                 timings=t,
                 in_scope=False,
             )
-            yield "meta", (meta, [f"declined: {verdict.reason}"], False)
+            yield "meta", (meta, [f"declined: {verdict.reason}"], False, [])
             yield (
                 "result",
                 AskResponse(
@@ -185,10 +185,13 @@ class Pipeline:
         deadline = time.monotonic() + self.settings.local_timeout_s
 
         g0 = time.monotonic()
+        answer = None
         async for delta in generator.astream(question, context_block, audience, deadline=deadline):
             if delta.prose_delta:
                 yield "token", delta.prose_delta
-        answer = generator.last
+            if delta.answer is not None:
+                answer = delta.answer
+        assert answer is not None
         used_kind = answer.generator
         replaced = False
 
@@ -203,6 +206,7 @@ class Pipeline:
 
         v0 = time.monotonic()
         claims: list[Claim] = verify_answer(answer.draft, retrieved, c.nli)  # type: ignore[arg-type]
+        unverified_prose = verify_prose(answer.draft.prose, claims, retrieved, c.nli)  # type: ignore[arg-type]
         t.verification_ms = int((time.monotonic() - v0) * 1000)
 
         meta = self._meta(
@@ -214,7 +218,7 @@ class Pipeline:
             in_scope=True,
         )
         yield "claims", claims
-        yield "meta", (meta, answer.warnings, replaced)
+        yield "meta", (meta, answer.warnings, replaced, unverified_prose)
         yield (
             "result",
             AskResponse(
@@ -222,6 +226,7 @@ class Pipeline:
                 session_id=request.session_id,
                 prose=answer.draft.prose,
                 claims=claims,
+                unverified_prose=unverified_prose,
                 sources=sources,
                 meta=meta,
                 declined=False,
@@ -250,10 +255,11 @@ class Pipeline:
             elif kind == "claims":
                 yield sse.claims([c.model_dump(mode="json") for c in payload])
             elif kind == "meta":
-                meta, warnings, replaced = payload
+                meta, warnings, replaced, unverified_prose = payload
                 body = meta.model_dump(mode="json")
                 body["warnings"] = warnings
                 body["fell_back"] = replaced
+                body["unverified_prose"] = unverified_prose
                 yield sse.meta(body)
             elif kind == "result":
                 yield sse.done(payload.answer_id)

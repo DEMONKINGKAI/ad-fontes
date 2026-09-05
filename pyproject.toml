@@ -73,6 +73,7 @@ ignore = [
 "tests/*" = ["PLR2004", "S101"]
 "app/generation/prompts.py" = ["E501"]  # prompt/example text; wrapping would change it
 "app/eval/generation.py" = ["E501"]     # markdown report tables read better unwrapped
+"app/rlhf/*.py" = ["E501", "PLR0912"]   # prompt/template text; long branch-per-type functions
 
 [tool.ruff.lint.flake8-bugbear]
 # FastAPI's dependency-injection idiom: Depends()/Query()/... in argument defaults.

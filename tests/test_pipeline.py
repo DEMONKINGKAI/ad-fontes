@@ -123,6 +123,26 @@ async def test_numeric_guard_flags_inflated_number(settings, chunks):
     assert resp.claims[0].verification.numeric_flag is True
 
 
+async def test_prose_hallucination_is_flagged_even_when_claims_are_safe(settings, chunks):
+    gen = FakeGenerator(
+        GeneratorKind.local_base,
+        prose=(
+            "fons iuris is a grounded RAG system. "
+            "Kai deployed it to Kubernetes for fifty thousand paying customers."
+        ),
+        claims=[
+            {
+                "text": "fons iuris is a grounded RAG system.",
+                "cite": ["fons-iuris#one-line-summary"],
+            }
+        ],
+    )
+    p = _pipeline(settings, chunks, generator=gen, nli=FakeNLI(default=(0.05, 0.9, 0.05)))
+    resp = await p.answer_sync(AskRequest(question="Tell me about fons iuris deployment"))
+    assert any("Kubernetes" in s for s in resp.unverified_prose)
+    assert not any("grounded RAG system" in s for s in resp.unverified_prose)
+
+
 async def test_denylist_declines(settings, chunks):
     gen = FakeGenerator(GeneratorKind.local_base, prose="x", claims=[])
     p = _pipeline(settings, chunks, generator=gen)

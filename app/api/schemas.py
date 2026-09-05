@@ -139,12 +139,6 @@ class ClaimVerification(BaseModel):
     numeric_detail: str | None = Field(
         default=None, description="Which token failed the numeric guard, when flagged."
     )
-    lexical_backstop: bool = Field(
-        default=False,
-        description="True when the label is 'supported' only because the claim's "
-        "content words are almost entirely present in the cited text (NLI was "
-        "neutral). A weaker form of support than NLI entailment.",
-    )
 
 
 class Claim(BaseModel):
@@ -185,6 +179,12 @@ class AskResponse(BaseModel):
     session_id: str | None = None
     prose: str = Field(..., description="The streamed human-readable answer.")
     claims: list[Claim] = Field(default_factory=list)
+    unverified_prose: list[str] = Field(
+        default_factory=list,
+        description="Prose sentences that neither mirror a verified claim nor are "
+        "entailed by a retrieved chunk — the model asserted them without support. "
+        "A UI should visually flag these in the prose.",
+    )
     sources: list[SourceChunk] = Field(default_factory=list)
     meta: ResponseMeta
     declined: bool = Field(

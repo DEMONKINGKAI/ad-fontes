@@ -70,7 +70,10 @@ ws     ::= [ \t\n]*
 
 class ClaimDraft(BaseModel):
     text: str = Field(..., min_length=1, max_length=500)
-    cite: list[str] = Field(..., min_length=1, max_length=4)
+    # The grammar/prompt asks for >=1 citation, but an unconstrained candidate
+    # (hosted model, perturbation) may drop it — that's a real signal, so accept
+    # an empty list and let the structural layer flag it as fabricated.
+    cite: list[str] = Field(default_factory=list, max_length=6)
 
 
 class AnswerDraft(BaseModel):

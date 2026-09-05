@@ -133,10 +133,10 @@ Negative controls: mean top-1 similarity **0.69** vs **0.82** for answerable que
 | Layer | Implementation | Notes |
 |---|---|---|
 | 1 — structural | `check_citations`: every cited id ∈ retrieved set, else `fabricated_citation` (NLI skipped) | Deterministic, cheap, first. |
-| 2 — NLI | `MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli`, once per answer. Premise = **breadcrumbed** cited chunk (`<name> › <section>\n<text>`); claim split into sentences, each scored vs ≤12 premise windows; claim entailment = weakest sentence, contradiction = strongest. | **`sentencepiece` is a hard dependency** — without it the DeBERTa-v3 tokenizer silently returns all-neutral. **Breadcrumb premise is essential**: a project chunk's pure text often omits its subject ("A solo narrative RPG where…") → NLI rates a claim that names the project *neutral* (e=0.003 → 0.997 with the breadcrumb). |
-| 2b — lexical backstop | if NLI is neutral (not contradicted) and ≥90% of the claim's content words are in the cited text → `supported` (flagged `lexical_backstop`) | DeBERTa-base has poor **recall on aggregate claims** ("Kai's BN projects are Threadfall, evidentia, Causeway" vs a chunk listing exactly those). High-precision, never overrides a contradiction. |
+| 2 — NLI | `MoritzLaurer/DeBERTa-v3-base-mnli-fever-anli`, once per answer. Premise = **breadcrumbed** cited chunk (`<name> › <section>\n<text>`), markdown stripped, ≤5 sentence-windows. Claim split into sentences; per sentence, entailment = best over {sentence, **frame-stripped** sentence} × windows; claim entailment = weakest sentence, contradiction = strongest (framed form only). | Three findings, all fixed in Phase 2.5: **(a)** `sentencepiece` is a hard dependency — without it the DeBERTa-v3 tokenizer silently returns all-neutral. **(b)** Breadcrumb premise is essential — a chunk's pure text often omits its subject ("A solo narrative RPG where…") → a claim that names the project scores *neutral* (0.003 → 0.997 with the breadcrumb). **(c)** DeBERTa-base rates a *framed* claim ("Kai's design philosophy emphasises X") **contradiction** even when X is verbatim in the premise; stripping the leading "Kai's … is/are/emphasises …" frame recovers it (0.06 → 0.998). |
 | 3 — numeric guard | `check_numbers`: every number/%/date/byte-size/multiplier in a claim must be present (verbatim or same value) in a cited chunk, else `numeric_flag` (advisory, doesn't change the label) | Catches rounded-up metrics NLI is blind to (97.2 vs 98). |
-| labels | `ENTAILMENT_THRESHOLD` 0.55 · `CONTRADICTION_THRESHOLD` 0.50 · `LEXICAL_COVERAGE_THRESHOLD` 0.90 | Default fons-iuris values; not yet re-tuned — the base-model eval doesn't justify moving them. |
+| prose check | `verify_prose`: each prose *sentence* not mirrored by a claim (≥0.7 content-word overlap) is NLI'd against the retrieved chunks; below 0.5 entailment → `unverified_prose` | The recruiter reads `prose`, not `claims[]`. A model can hallucinate in prose and extract only safe claims (`neg-k8s`: "Kai has worked on Kubernetes" in prose, no matching claim). Surfaced on `AskResponse.unverified_prose` and as `prose_unverified_sentences_per_100` in the eval. |
+| labels | `ENTAILMENT_THRESHOLD` 0.55 · `CONTRADICTION_THRESHOLD` 0.50 | fons-iuris defaults; contradiction also requires `contradiction ≥ entailment`, so a framed-true claim (high entailment via the stripped variant, moderate contradiction from the framed form) stays `supported`. |
 
 ### Scope gate
 
@@ -144,38 +144,79 @@ Negative controls: mean top-1 similarity **0.69** vs **0.82** for answerable que
 - **Retrieval-floor**: decline only when the top retrieved score < 0.55 (gibberish / different subject).
 - **The centroid gate the brief suggested was measured and dropped.** The corpus is about one person, so answerable *and* unanswerable "Kai …" questions both sit ~0.59–0.62 from the centroid — no signal. And short factual questions ("Who is Kai?") retrieve at ~0.71, overlapping the negative-control band, so a 0.74 top-score threshold false-declined 25% of the answerable set in testing. Dropping the centroid AND-condition and lowering the floor to 0.55 gives 0% false declines. "Answerable-looking but unanswerable" ("Does Kai know Rust?") is deliberately **not** the gate's job — the generator must say "the corpus doesn't cover that"; the NLI layer flags it if the model rambles instead. This is exactly the base-model weakness the DPO stage targets.
 
+### Phase 2.5 — verification hardening
+
+The first full base eval surfaced four issues; fixed before Phase 3 because the preference-data pipeline depends on this signal:
+
+1. **Prose vs. claims.** Verification checked `claims[]` only, so a model could hallucinate in prose and extract safe claims. Added `verify_prose` + `AskResponse.unverified_prose` + a `prose_unverified_sentences_per_100` eval metric.
+2. **NLI frame-strip.** DeBERTa-base was marking framed-but-true claims `contradicted`. Added leading-frame stripping (§ NLI table row) — this was the single biggest quality lever.
+3. **Lexical backstop removed.** It rescued 0 claims in the full run and risked false-positives on paraphrase-but-wrong claims; the frame-strip made it redundant.
+4. **`self.last` race.** The generator stashed its result on a mutable attribute two overlapping requests could stomp; the terminal `GenerationDelta` now carries the `GeneratedAnswer`.
+
 ### Deviations from the brief (Phase 2)
 
 - **`app/generation/base.py` and `app/bootstrap.py`** added to the file list — the two generator backends need one shared interface + `ProseStreamer`, and the API lifespan and the eval must build the *same* pipeline.
 - **No JSON-schema grammar** — see the generation table. Same guarantee (well-formed `{prose, claims}`) reached via `json_object` + prompt + validation.
 - **Centroid scope gate not used** — see above.
+- **SSE `token` event gained an optional `replace: true`** (sent once if generation falls back mid-stream) and `meta` gained `warnings` / `fell_back` / `unverified_prose`. Backward-compatible additions to the §5 contract, called out here.
 - `sentencepiece` added to runtime deps; `numpy` pin relaxed to `<3` (scipy 1.18 / torch 2.14 require numpy 2).
 
 ### Phase 2 eval — base-model baseline
 
-`python -m app.eval.run_eval --stage generation --model base` · 76 questions · commit `e17fa62` · full report at [`app/eval/baselines/generation-base-phase2.md`](app/eval/baselines/generation-base-phase2.md).
+`python -m app.eval.run_eval --stage generation --model base` · 76 questions · base `f89e135` + Phase 2.5 hardening · full report at [`app/eval/baselines/generation-base-phase2.md`](app/eval/baselines/generation-base-phase2.md).
 
-| metric | base (Qwen2.5-1.5B) |
-|---|---|
-| **unsupported + fabricated claims / 100 answers** | **56.6** |
-| citation hit rate (cites resolve to retrieved chunks) | 93.8% |
-| supported rate (of all claims) | 42% |
-| label distribution (80 claims) | supported 34 · unsupported 38 · fabricated 5 · contradicted 3 |
-| contradicted / 100 · numeric violations / 100 | 3.9 · 3.9 |
-| decline on the 10 negative controls | 40% (the 4 denylist ones; the model answers "does Kai know Rust?" etc. with unsupported claims) |
-| false-decline on the 66 answerable | 0% |
-| latency p50 / p95 (dev box, ~= half a 2 vCPU Space) | 14.2 s / 28.0 s |
-| hosted-fallback rate | 7% |
-| mean prose length | 269 chars |
+| metric | before 2.5 | **base (Qwen2.5-1.5B), after 2.5** |
+|---|---|---|
+| **unsupported + fabricated claims / 100 answers** | 56.6 | **44.7** |
+| **unverified prose sentences / 100 answers** (new) | — | **35.5** (29% of answers have ≥1) |
+| citation hit rate | 93.8% | 93.7% |
+| supported rate (of all claims) | 42% | **51%** |
+| label distribution (79 claims) | 34 / 38 / 5 / 3 | supported 40 · unsupported 29 · fabricated 5 · contradicted 5 |
+| contradicted / 100 · numeric violations / 100 | 3.9 / 3.9 | 6.6 / 3.9 |
+| decline on the 10 negative controls | 40% | 40% (the 4 denylist ones) |
+| false-decline on the 66 answerable | 0% | 0% |
+| latency p50 / p95 (dev box ≈ ½ a 2 vCPU Space) | 14 / 28 s | 16 / 33 s |
+| hosted-fallback rate | 7% | 7% |
 
-**Variance:** on repeated 9–12-question subsets during development the headline moved between ~56 and ~75 per 100 (temperature 0.3 + which questions land in the subset). The full-set number is more stable; Phase 5 runs base and tuned ≥2× each and reports bootstrap CIs.
+The NLI frame-strip (Phase 2.5) is what moved the headline: 12 legitimately-grounded framed claims flipped `unsupported`/`contradicted` → `supported`.
 
-**Reading the number:** ~half of the "unsupported" labels are NLI-recall misses on legitimately-grounded *summary* claims ("Kai's design philosophy emphasises a clean separation of concerns…"), not hallucinations. The genuine failures the layer catches cleanly: `exp-axisray` — the model put EffiGO's work at Axisray (**contradicted**); `adv-thread-prod` — "Kai deployed Threadfall to production for real users" (**unsupported**, corpus says `demo: null`); `exp-effigo`/`exp-intern` — correct facts with a citation to a chunk that wasn't retrieved (**fabricated_citation**). The tuned model should (a) make shorter, atomic, checkable claims, (b) decline the unanswerable negatives, (c) stop over-reaching verbs — all of which move this metric down.
+**Variance:** on repeated small subsets during development the headline moved ±10 (temperature 0.3 + subset composition). The full-set number is more stable; Phase 5 runs base and tuned ≥2× each with bootstrap CIs.
+
+**Genuine failures the layer catches:** `exp-axisray` — the model attributed EffiGO's work to Axisray; `adv-thread-prod` — "Kai deployed Threadfall to production for real users" (corpus says `demo: null`); `exp-effigo`/`exp-intern` — correct facts cited to a non-retrieved chunk (`fabricated_citation`); `neg-k8s` — "Kai has worked on Kubernetes" appears in *prose* with no matching claim → caught by `verify_prose`. Residual noise: some flagged prose states true-but-unrequested bio ("He has contributed to Causeway, Threadfall, …") — a mild relevance issue the tuned model should also reduce. The tuned model should (a) make atomic, checkable claims, (b) keep prose == claims, (c) decline the unanswerable negatives, (d) drop over-reaching verbs.
+
+## Phase 3 decisions — RLAIF preference data
+
+Pipeline (`app/rlhf/`, all stages resumable JSONL): `gen_questions` → `gen_candidates` (+`perturb`) → `judge` → `build_pairs` → `data/rlhf/pairs.jsonl` (TRL DPO format). `report.py` summarises; `hand_label.py` exports a blind sample for Kai and scores judge–human agreement.
+
+| Decision | Choice | Why |
+|---|---|---|
+| Question set | templated: `section_template × persona × project` + profile/experience/skills/cross/adversarial/negative buckets. **~378** unique (templating ceiling, not 600); deterministic 20% holdout by id-hash | Covers every project/section; personas (recruiter / HR screener / ML lead / skeptical CTO) vary tone. `--paraphrase` (hosted) could push toward 600 — not built, the set is diverse enough for DPO. |
+| Candidates per question | `base-t0.3`, `base-t0.9`, `hosted`, + 1–2 `perturb:<type>` of the most-faithful real candidate | Two local temps give a faithful/verbose spread; the hosted 7B is the usual "good" answer; perturbations are known-bad by construction and **labelled** so the judge's detection rate is measurable. |
+| Perturbations (`perturb.py`) | inflate_number, upgrade_verb (contributed→led, prototype→production), invent_demo_url, add_unsupported_tech, drop_limitation, first_person — deterministic, one edit each | Exactly the failure modes the project targets (brief §1). |
+| Judge | **verification labels + numeric guard + LLM-judge rubric** (hosted, JSON: faithfulness / humility / audience_fit / concision / third_person_voice, 1–5). Weighted scalar + **hard veto** on any contradicted/fabricated claim, ≥2 unverified-prose sentences, judge-faithfulness ≤ 2, or first-person voice. | The verifier and the judge catch *different* failures (below) — using both is the point. |
+| Pair construction | per question: highest `combined = judge_scalar − verification_penalties` **non-perturbed, non-vetoed** candidate is `chosen`, paired with every candidate it beats by `--margin` (0.12). | A perturbed candidate can only ever be `rejected`. |
+| Length control | after building pairs, down-sample the majority sign of `len(rejected) − len(chosen)` toward the minority (dropping smallest-margin pairs first) and report the residual z. | Brief: length must not predict preference. Pilot: z 0.50 → 0.30. |
+
+### Pilot (20 questions, `app/rlhf/pilot/phase3-report.md`) — validates the pipeline
+
+**Perturbation detection — 23/24 caught by *either* layer:**
+
+| perturbation | verification caught | judge caught |
+|---|---|---|
+| invent_demo_url | 9/9 | 9/9 |
+| add_unsupported_tech | 6/6 | 6/6 |
+| drop_limitation | 0/5 | **5/5** (verifier is blind to omission; judge isn't) |
+| first_person | 0/2 | **2/2** (verifier is blind to voice; judge isn't) |
+| inflate_number | 1/2 | 0/2 → 1 miss; judge prompt strengthened afterward to check numbers digit-for-digit |
+
+Judge scalar cleanly separates sources: hosted **0.93**, base **0.78**, perturb **0.59**. This is the two-signal design working — the LLM judge covers omission and voice, which NLI/numeric can't see.
+
+**Full run** is Kai's to launch (~5–6 h compute, resumable): `gen_candidates --holdout all` → `judge` → `build_pairs`, then `hand_label export -n 100` for the agreement check. If judge–human agreement < 80%, revise `_JUDGE_SYSTEM` before Phase 4.
 
 ## Open items carried forward
 
-- Phase 3: RLAIF preference labels come from this repo's own verifier + an LLM
-  judge — a stated limitation for the final write-up.
+- Phase 3 full run + judge–human agreement check (Kai; the ~378-question set +
+  resumable scripts are in place, pilot validated).
 - Phase 5: re-tune `ENTAILMENT_THRESHOLD` etc. against the base-vs-tuned eval if
   the label distribution warrants it; record here.
 
@@ -188,9 +229,9 @@ Negative controls: mean top-1 similarity **0.69** vs **0.82** for answerable que
 - RLAIF labels are self-generated. Judge–human agreement is measured on ~100
   hand-labelled pairs in Phase 3; if < ~80%, the rubric is fixed before training.
 - **NLI recall on aggregate/summary claims is weak** (DeBERTa-v3-base). The
-  lexical backstop rescues the clearest cases; some genuinely-supported broad
-  claims still land as `unsupported`. This inflates the "unsupported per 100"
-  metric for *both* models, but the base model — which makes more sweeping
+  frame-strip (Phase 2.5) fixed the framed-claim class; some genuinely-supported
+  broad claims still land as `unsupported`. This inflates the "unsupported per
+  100" metric for *both* models, but the base model — which makes more sweeping
   claims — is penalised more, which is itself a faithfulness signal (a humble
   model makes checkable claims). Treat `unsupported` as "not confirmed", not
   "false" (fons-iuris's four-label rationale).

@@ -27,7 +27,8 @@ data/models/
 data/index/*
 data/feedback/*.jsonl
 data/eval/*
-data/rlhf/*.jsonl
+data/rlhf/*
+!data/rlhf/.gitkeep
 
 # Keep the corpus and directory placeholders
 !data/corpus/**

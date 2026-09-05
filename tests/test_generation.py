@@ -7,7 +7,7 @@ from app.api.schemas import Audience
 from app.generation.base import ProseStreamer, parse_answer
 from app.generation.prompts import format_context, system_prompt
 from app.generation.schema import ANSWER_JSON_SCHEMA, AnswerDraft
-from app.verification.verify import lexical_coverage
+from app.verification.verify import verify_prose
 
 # --- ProseStreamer ----------------------------------------------------
 
@@ -107,19 +107,29 @@ def chunks_sample():
     return out
 
 
-# --- lexical coverage ---------------------------------------------
+# --- prose verification -----------------------------------------
 
 
-def test_lexical_coverage_full_and_partial():
-    cited = ["Threadfall, evidentia, and Causeway use Bayesian networks."]
-    full = lexical_coverage("Bayesian networks: Threadfall, evidentia, Causeway", cited)
-    assert full == 1.0
-    partial = lexical_coverage("Threadfall and NeuMF use Bayesian networks", cited)
-    assert 0.0 < partial < 1.0  # NeuMF is not in the cited text
+def test_verify_prose_flags_sentence_not_in_claims_or_chunks(chunks_sample):
+    # a claim covers sentence 1; sentence 2 asserts something unsupported
+    from app.api.schemas import Claim, ClaimLabel, ClaimVerification
 
-
-def test_lexical_coverage_ignores_stopwords():
-    assert lexical_coverage("the of and to", ["anything"]) == 0.0
+    claims = [
+        Claim(
+            text="Threadfall is a solo narrative RPG decided by a causal engine.",
+            cite=["threadfall#one-line-summary"],
+            verification=ClaimVerification(
+                label=ClaimLabel.supported, entailment=0.9, contradiction=0.0
+            ),
+        )
+    ]
+    prose = (
+        "Threadfall is a solo narrative RPG decided by a causal engine. "
+        "Kai deployed it to Kubernetes for ten thousand paying users."
+    )
+    flagged = verify_prose(prose, claims, chunks_sample, nli=None)
+    assert any("Kubernetes" in s for s in flagged)
+    assert not any("solo narrative RPG" in s for s in flagged)
 
 
 # --- schema ------------------------------------------------------

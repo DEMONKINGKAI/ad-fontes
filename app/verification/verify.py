@@ -1,8 +1,9 @@
-"""Glue: run the verification layers over a generated answer and produce the API
-claim objects.
+"""Glue: run the verification layers over a generated answer.
 
-Kept separate from the individual layer modules (which stay pure and independently
-testable) and from the pipeline (which shouldn't do per-claim mechanics).
+Produces the API ``Claim`` objects (per-claim: structural + NLI + numeric), and a
+**prose-level** check — the recruiter reads the ``prose``, not ``claims[]``, so a
+model that hallucinates in prose while extracting only safe claims must still be
+caught. Kept out of the pure layer modules and out of the pipeline.
 """
 
 from __future__ import annotations
@@ -18,29 +19,26 @@ from app.verification.numeric import check_numbers
 from app.verification.structural import check_citations
 
 _WORD = re.compile(r"[a-z0-9]+")
+_SENT = re.compile(r"(?<=[.!?])\s+(?=[A-Z0-9])")
 _STOP = frozenset(
     "a an the of to in on at for and or is are was were be been being this that these those "
     "it its his her their kai kais he she they them with as by from into about over under "
     "has have had do does did not no yes also more most such like than then which who what "
-    "where when how why can could would should may might will".split()
+    "where when how why can could would should may might will using used use built".split()
 )
+_PROSE_CLAIM_COVERAGE = 0.7  # prose sentence considered "mirrored by a claim" above this
+_PROSE_ENTAIL_THRESHOLD = 0.5
 
 
 def _content_words(text: str) -> set[str]:
     return {w for w in _WORD.findall(text.lower()) if w not in _STOP and len(w) > 2}
 
 
-def lexical_coverage(claim_text: str, cited_texts: list[str]) -> float:
-    """Fraction of the claim's content words that appear in the cited text.
-
-    A high-precision backstop for NLI's poor recall on aggregate claims — see
-    ``app.verification.labels``.
-    """
-    claim_words = _content_words(claim_text)
-    if not claim_words:
-        return 0.0
-    haystack = _content_words(" ".join(cited_texts))
-    return len(claim_words & haystack) / len(claim_words)
+def _coverage(text: str, haystack: str) -> float:
+    words = _content_words(text)
+    if not words:
+        return 1.0
+    return len(words & _content_words(haystack)) / len(words)
 
 
 def to_source_chunk(c: RetrievedChunk) -> SourceChunk:
@@ -70,24 +68,17 @@ def verify_answer(
         structural = check_citations(cd.cite, retrieved_ids)
         cited_chunks = [by_id[cid] for cid in structural.valid_cites]
         cited_texts = [c.text for c in cited_chunks]
-
         numeric = check_numbers(cd.text, cited_texts)
 
         nli_score = None
-        coverage = 0.0
-        if not structural.fabricated and cited_chunks:
-            coverage = lexical_coverage(cd.text, cited_texts)
-            if nli is not None:
-                # Prepend the breadcrumb to each premise: a project chunk's pure
-                # text often lacks its subject ("A solo narrative RPG where…"),
-                # which NLI then rates neutral against a claim that names the
-                # project. The citable text the user sees stays pure.
-                premises = [f"{c.title}\n{c.text}" for c in cited_chunks]
-                nli_score = nli.score_claim(cd.text, premises)
+        if not structural.fabricated and cited_chunks and nli is not None:
+            # breadcrumbed premise: a project chunk's pure text often omits its
+            # subject ("A solo narrative RPG where…") -> NLI rates a claim that
+            # names the project neutral. Citable text the user sees stays pure.
+            premises = [f"{c.title}\n{c.text}" for c in cited_chunks]
+            nli_score = nli.score_claim(cd.text, premises)
 
-        label, numeric_flag, lexical_backstop = fuse_label(
-            structural, nli_score, numeric, lexical_coverage=coverage
-        )
+        label, numeric_flag = fuse_label(structural, nli_score, numeric)
 
         claims.append(
             Claim(
@@ -99,9 +90,36 @@ def verify_answer(
                     contradiction=round(nli_score.contradiction, 4) if nli_score else 0.0,
                     numeric_flag=numeric_flag,
                     numeric_detail=numeric.detail if numeric_flag else None,
-                    lexical_backstop=lexical_backstop,
                 ),
                 sources=[to_source_chunk(c) for c in cited_chunks],
             )
         )
     return claims
+
+
+def verify_prose(
+    prose: str,
+    claims: list[Claim],
+    retrieved: list[RetrievedChunk],
+    nli: NLIVerifier | None,
+) -> list[str]:
+    """Return prose sentences that neither mirror a claim nor are entailed by a
+    retrieved chunk — i.e. the model asserted something in prose it did not (and
+    could not) back up. ``neg-k8s`` in the Phase 2 eval is the motivating case.
+    """
+    sentences = [s.strip() for s in _SENT.split(prose.strip()) if len(s.strip()) > 15]
+    if not sentences:
+        return []
+    claim_blob = " ".join(c.text for c in claims)
+    unverified: list[str] = []
+    premises = [f"{c.title}\n{c.text}" for c in retrieved]
+    for sent in sentences:
+        if _coverage(sent, claim_blob) >= _PROSE_CLAIM_COVERAGE:
+            continue  # the claims already cover this sentence
+        if nli is None:
+            unverified.append(sent)
+            continue
+        score = nli.score_claim(sent, premises)
+        if score.entailment < _PROSE_ENTAIL_THRESHOLD:
+            unverified.append(sent)
+    return unverified
