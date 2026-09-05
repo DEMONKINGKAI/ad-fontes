@@ -1,0 +1,17 @@
+# Serving runtime — mirrors [project.dependencies] in pyproject.toml.
+# Kept as a flat file so the Docker build can install and cache this layer
+# before the source tree is copied in. Update both together.
+fastapi>=0.115,<0.116
+uvicorn[standard]>=0.32,<0.33
+pydantic>=2.9,<3
+pydantic-settings>=2.6,<3
+python-frontmatter>=1.1,<2
+httpx>=0.27,<0.28
+chromadb>=0.5.5,<0.6
+sentence-transformers>=3.3,<4
+einops>=0.8,<0.9
+transformers>=4.46,<5
+torch>=2.2,<3
+llama-cpp-python>=0.3.2,<0.4
+huggingface-hub>=0.26,<1
+numpy>=1.26,<2

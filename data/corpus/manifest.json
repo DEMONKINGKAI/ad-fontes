@@ -1,0 +1,365 @@
+{
+  "generated": "2026-09-05",
+  "subject": "Archit (Kai) Sharma",
+  "documents": [
+    {
+      "path": "faq/recruiter-faq.md",
+      "doc_type": "faq",
+      "id": null,
+      "name": null,
+      "repo": null,
+      "stack": null,
+      "domain": null,
+      "sections": [],
+      "words": 630
+    },
+    {
+      "path": "profile/experience.md",
+      "doc_type": "experience",
+      "id": null,
+      "name": null,
+      "repo": null,
+      "stack": null,
+      "domain": null,
+      "sections": [
+        "Product Engineer \u2014 EffiGO Global, Hyderabad, India (Jun 2024 \u2013 Jul 2025)",
+        "Product Engineer Intern \u2014 EffiGO Global, Bengaluru, India (Feb 2024 \u2013 May 2024)",
+        "ML & Data Analytics Intern \u2014 Axisray, Ahmedabad, India (Jun 2023 \u2013 Jul 2023)",
+        "Education"
+      ],
+      "words": 385
+    },
+    {
+      "path": "profile/kai-profile.md",
+      "doc_type": "profile",
+      "id": "Archit Sharma",
+      "name": "Archit Sharma",
+      "repo": null,
+      "stack": null,
+      "domain": null,
+      "sections": [
+        "Positioning (in Kai's own words from the portfolio site)",
+        "Design philosophy",
+        "Core technical identity",
+        "What Kai is looking for",
+        "The portfolio site"
+      ],
+      "words": 383
+    },
+    {
+      "path": "profile/skills.md",
+      "doc_type": "skills",
+      "id": null,
+      "name": null,
+      "repo": null,
+      "stack": null,
+      "domain": null,
+      "sections": [
+        "Causal inference & probabilistic graphical models",
+        "Generative AI & NLP",
+        "Data science & analytics",
+        "Computer vision",
+        "Reinforcement learning",
+        "Recommender systems",
+        "MLOps & engineering",
+        "Ways of working (visible across repos)"
+      ],
+      "words": 459
+    },
+    {
+      "path": "projects/causeway.md",
+      "doc_type": "project",
+      "id": "causeway",
+      "name": "\"Causeway \u2014 Multimodal Causal Inference Framework\"",
+      "repo": "https://github.com/DEMONKINGKAI/Causeway",
+      "stack": [
+        "Python 3.9+",
+        "numpy",
+        "scipy",
+        "pandas",
+        "networkx",
+        "scikit-learn",
+        "statsmodels",
+        "PyTorch",
+        "torchvision",
+        "transformers",
+        "pgmpy",
+        "DoWhy",
+        "EconML",
+        "causal-learn",
+        "lingam",
+        "Dash",
+        "dash-cytoscape",
+        "matplotlib",
+        "seaborn",
+        "HuggingFace Router API",
+        "pytest"
+      ],
+      "domain": [
+        "causal inference",
+        "causal discovery",
+        "counterfactual reasoning",
+        "data science tooling"
+      ],
+      "sections": [
+        "One-line summary",
+        "The problem it solves",
+        "What it does, end to end",
+        "Theory implemented (as documented in the README)",
+        "Multimodal support",
+        "The interactive app (Dash + dash-cytoscape, `python visualize.py`, port 8050)",
+        "Sample datasets (1,000 rows each)",
+        "Project structure",
+        "Key decisions and why",
+        "Skills demonstrated",
+        "Relationship to other projects"
+      ],
+      "words": 979
+    },
+    {
+      "path": "projects/evidentia.md",
+      "doc_type": "project",
+      "id": "evidentia",
+      "name": "\"evidentia\"",
+      "repo": "https://github.com/DEMONKINGKAI/evidentia",
+      "stack": [
+        "Python",
+        "pgmpy 1.1.0",
+        "pandas",
+        "numpy",
+        "matplotlib",
+        "FastAPI",
+        "React 18",
+        "Vite",
+        "Tailwind",
+        "cytoscape",
+        "vitest",
+        "Testing Library",
+        "DDXPlus dataset"
+      ],
+      "domain": [
+        "explainable AI",
+        "medical diagnosis",
+        "Bayesian networks",
+        "calibration"
+      ],
+      "sections": [
+        "One-line summary",
+        "The problem it solves",
+        "Data",
+        "How it works",
+        "Calibration evaluation (full held-out test split, 134,529 patients)",
+        "Key decisions and why",
+        "Skills demonstrated"
+      ],
+      "words": 748
+    },
+    {
+      "path": "projects/fons-iuris.md",
+      "doc_type": "project",
+      "id": "fons-iuris",
+      "name": "\"fons iuris\"",
+      "repo": "https://github.com/DEMONKINGKAI/fons-iuris",
+      "stack": [
+        "Python",
+        "FastAPI",
+        "ChromaDB",
+        "sentence-transformers",
+        "nomic-embed-text-v1.5",
+        "transformers",
+        "PyTorch",
+        "Qwen3-30B-A3B via HF Inference Providers (deepinfra)",
+        "DeBERTa-v3 NLI cross-encoder",
+        "BeautifulSoup/lxml",
+        "pydantic v2",
+        "React 19",
+        "TypeScript",
+        "Vite",
+        "Tailwind 4",
+        "Docker",
+        "GitHub Actions"
+      ],
+      "domain": [
+        "RAG",
+        "legal/regulatory NLP",
+        "hallucination detection",
+        "grounded generation"
+      ],
+      "sections": [
+        "One-line summary",
+        "The problem it solves",
+        "Pipeline",
+        "Stage-by-stage design (and the reasoning behind each choice)",
+        "Evaluation methodology and results",
+        "Deployment",
+        "Key decisions and why",
+        "Skills demonstrated"
+      ],
+      "words": 1154
+    },
+    {
+      "path": "projects/loan-approval-kaggle.md",
+      "doc_type": "project",
+      "id": "loan-approval",
+      "name": "\"Loan Approval Prediction \u2014 Dataset and Model (Kaggle)\"",
+      "repo": "null (private code; public Kaggle artifacts)",
+      "stack": [
+        "Python",
+        "pandas",
+        "numpy",
+        "scikit-learn",
+        "XGBoost",
+        "matplotlib",
+        "seaborn",
+        "Kaggle"
+      ],
+      "domain": [
+        "data science",
+        "credit risk",
+        "classical ML",
+        "dataset engineering"
+      ],
+      "sections": [
+        "Two artifacts",
+        "Context",
+        "Skills demonstrated"
+      ],
+      "words": 249
+    },
+    {
+      "path": "projects/neumf-recommender.md",
+      "doc_type": "project",
+      "id": "neumf",
+      "name": "\"NeuMF Genre-Aware Movie Recommender\"",
+      "repo": "https://github.com/DEMONKINGKAI/NeuMF-Movie-Recommendation-Engine",
+      "stack": [
+        "Python 3.9+",
+        "PyTorch",
+        "FastAPI",
+        "Uvicorn",
+        "sentence-transformers (all-MiniLM-L6-v2)",
+        "faiss-cpu",
+        "numpy",
+        "pandas",
+        "scikit-learn",
+        "YAML config",
+        "React",
+        "Vite",
+        "Anime.js",
+        "Axios",
+        "MovieLens 100K and 25M"
+      ],
+      "domain": [
+        "recommender systems",
+        "deep learning",
+        "NLP intent understanding"
+      ],
+      "sections": [
+        "One-line summary",
+        "The problem it solves",
+        "Model",
+        "NLP intent system (serving time)",
+        "Engineering highlight: the memory fix",
+        "System components",
+        "Key decisions and why",
+        "Skills demonstrated"
+      ],
+      "words": 672
+    },
+    {
+      "path": "projects/pharmacausal.md",
+      "doc_type": "project",
+      "id": "pharmacausal",
+      "name": "\"pharmacausal\"",
+      "repo": "https://github.com/DEMONKINGKAI/pharmacausal",
+      "stack": [
+        "Python",
+        "pandas",
+        "pyarrow",
+        "numpy",
+        "requests",
+        "tqdm",
+        "causal-learn (PC/FCI)",
+        "pytest",
+        "FAERS",
+        "SIDER",
+        "self-contained HTML/SVG visualisation"
+      ],
+      "domain": [
+        "causal discovery",
+        "pharmacovigilance",
+        "epidemiology",
+        "data engineering"
+      ],
+      "sections": [
+        "One-line summary",
+        "The problem it solves",
+        "Pipeline",
+        "Data realities (FAERS)",
+        "Feature engineering (422,458 \u00d7 143)",
+        "Discovery: assumptions, stated plainly",
+        "Results",
+        "Validation against SIDER (not DrugBank)",
+        "Testing and reproducibility",
+        "Skills demonstrated"
+      ],
+      "words": 995
+    },
+    {
+      "path": "projects/threadfall.md",
+      "doc_type": "project",
+      "id": "threadfall",
+      "name": "\"Threadfall: The Shattered Pact\"",
+      "repo": "https://github.com/DEMONKINGKAI/Threadfall",
+      "stack": [
+        "Python 3.11+",
+        "FastAPI",
+        "pgmpy",
+        "React 18",
+        "Tailwind",
+        "Vite",
+        "Cytoscape.js",
+        "HuggingFace InferenceClient",
+        "Qwen2.5-7B-Instruct",
+        "ChromaDB",
+        "Qdrant",
+        "sentence-transformers",
+        "Docker",
+        "nginx"
+      ],
+      "domain": [
+        "interactive fiction",
+        "causal reasoning",
+        "LLM systems"
+      ],
+      "sections": [
+        "One-line summary",
+        "The problem it solves",
+        "Core design principle",
+        "How it works \u2014 the /action pipeline (9 steps per player input)",
+        "Pearl's causal hierarchy in the engine",
+        "The campaign graph",
+        "LLM narrator",
+        "RAG inside Threadfall",
+        "Architecture",
+        "API",
+        "Engineering and reliability work (from the changelog, v0.4 \u2192 v1.1)",
+        "Key decisions and why",
+        "Skills demonstrated",
+        "References cited in the repo"
+      ],
+      "words": 1351
+    },
+    {
+      "path": "stack/tech-stack-map.md",
+      "doc_type": "stack_map",
+      "id": null,
+      "name": null,
+      "repo": null,
+      "stack": null,
+      "domain": null,
+      "sections": [],
+      "words": 692
+    }
+  ]
+}

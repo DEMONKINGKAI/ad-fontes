@@ -1,0 +1,29 @@
+# Local development. Mirrors the Hugging Face Space, but maps to :8000 and
+# mounts the index/feedback dirs so a rebuilt index and collected feedback
+# survive `docker compose down`.
+services:
+  api:
+    build:
+      context: .
+      target: runtime
+    ports:
+      - "8000:7860"
+    environment:
+      AD_FONTES_PORT: "7860"
+      CORS_ORIGINS: "${CORS_ORIGINS:-http://localhost:5173,http://localhost:4173}"
+      HF_TOKEN: "${HF_TOKEN:-}"
+      AD_FONTES_DEFAULT_MODEL: "${AD_FONTES_DEFAULT_MODEL:-tuned}"
+      AD_FONTES_LOG_LEVEL: "${AD_FONTES_LOG_LEVEL:-INFO}"
+    volumes:
+      - ./data/index:/app/data/index
+      - ./data/feedback:/app/data/feedback
+      - model-cache:/app/data/models
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:7860/api/health/live"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 90s
+
+volumes:
+  model-cache:

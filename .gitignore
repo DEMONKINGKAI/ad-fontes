@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Models + build artefacts (baked into the Docker image, never committed)
+data/models/
+*.gguf
+*.safetensors
+*.bin
+
+# Generated data — the index is rebuilt from the corpus; feedback/eval are runtime output
+data/index/*
+data/feedback/*.jsonl
+data/eval/*
+data/rlhf/*.jsonl
+
+# Keep the corpus and directory placeholders
+!data/corpus/**
+!**/.gitkeep
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp

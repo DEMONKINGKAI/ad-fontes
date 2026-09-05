@@ -1,0 +1,8 @@
+# Preference-data construction and evaluation (Phases 3 and 5).
+# Not installed in the serving image. TRL / peft / bitsandbytes live only in the
+# Colab training notebook (Phase 4), not here, because they pull CUDA wheels.
+-r requirements.txt
+datasets>=3.0,<4
+pandas>=2.2,<3
+scikit-learn>=1.5,<2
+matplotlib>=3.9,<4

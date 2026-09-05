@@ -1,0 +1,14 @@
+# Lightweight deps for the CI unit-test job. The heavy runtime libs (torch,
+# chromadb, llama-cpp-python, sentence-transformers, transformers) are exercised
+# by the Docker build job and by the phase-specific integration tests that need
+# them; Phase 0-1 unit tests deliberately don't import them.
+fastapi>=0.115,<0.116
+uvicorn[standard]>=0.32,<0.33
+pydantic>=2.9,<3
+pydantic-settings>=2.6,<3
+python-frontmatter>=1.1,<2
+httpx>=0.27,<0.28
+numpy>=1.26,<2
+pytest>=8.3,<9
+pytest-asyncio>=0.24,<0.25
+ruff>=0.7,<0.8
