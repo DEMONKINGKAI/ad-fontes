@@ -137,7 +137,9 @@ async def test_prose_hallucination_is_flagged_even_when_claims_are_safe(settings
             }
         ],
     )
-    p = _pipeline(settings, chunks, generator=gen, nli=FakeNLI(default=(0.05, 0.9, 0.05)))
+    # the safe claim genuinely entails; only the extra prose sentence is unbacked
+    nli = FakeNLI(default=(0.05, 0.9, 0.05), rules={"grounded RAG system": (0.95, 0.03, 0.02)})
+    p = _pipeline(settings, chunks, generator=gen, nli=nli)
     resp = await p.answer_sync(AskRequest(question="Tell me about fons iuris deployment"))
     assert any("Kubernetes" in s for s in resp.unverified_prose)
     assert not any("grounded RAG system" in s for s in resp.unverified_prose)

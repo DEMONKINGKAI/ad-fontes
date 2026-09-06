@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 
-from app.api.schemas import Claim, ClaimVerification, SourceChunk
+from app.api.schemas import Claim, ClaimLabel, ClaimVerification, SourceChunk
 from app.generation.schema import AnswerDraft
 from app.retrieval.retriever import RetrievedChunk
 from app.verification.labels import fuse_label
@@ -28,6 +28,7 @@ _STOP = frozenset(
 )
 _PROSE_CLAIM_COVERAGE = 0.7  # prose sentence considered "mirrored by a claim" above this
 _PROSE_ENTAIL_THRESHOLD = 0.5
+_MAX_PROSE_SENTENCES = 10  # cap NLI work on a runaway answer
 
 
 def _content_words(text: str) -> set[str]:
@@ -103,23 +104,42 @@ def verify_prose(
     retrieved: list[RetrievedChunk],
     nli: NLIVerifier | None,
 ) -> list[str]:
-    """Return prose sentences that neither mirror a claim nor are entailed by a
-    retrieved chunk — i.e. the model asserted something in prose it did not (and
-    could not) back up. ``neg-k8s`` in the Phase 2 eval is the motivating case.
+    """Return prose sentences the model asserted without backing them up.
+
+    A sentence is cleared only if a **supported** claim mirrors it — a sentence
+    mirrored solely by an ``unsupported`` / ``contradicted`` claim is *not*
+    covered (the recruiter reads the prose, and a confident sentence behind a
+    failing claim is exactly what must surface: e.g. "Kai chose pgmpy for
+    pharmacausal" when the corpus says causal-learn). Everything else is checked
+    by NLI against the cited chunks plus the top retrieved ones, in one batch.
+    ``neg-k8s`` in the Phase 2 eval is the original motivating case.
     """
     sentences = [s.strip() for s in _SENT.split(prose.strip()) if len(s.strip()) > 15]
     if not sentences:
         return []
-    claim_blob = " ".join(c.text for c in claims)
-    unverified: list[str] = []
-    premises = [f"{c.title}\n{c.text}" for c in retrieved]
-    for sent in sentences:
-        if _coverage(sent, claim_blob) >= _PROSE_CLAIM_COVERAGE:
-            continue  # the claims already cover this sentence
-        if nli is None:
-            unverified.append(sent)
-            continue
-        score = nli.score_claim(sent, premises)
-        if score.entailment < _PROSE_ENTAIL_THRESHOLD:
-            unverified.append(sent)
-    return unverified
+
+    supported_blob = " ".join(
+        c.text for c in claims if c.verification.label == ClaimLabel.supported
+    )
+    pending = [s for s in sentences if _coverage(s, supported_blob) < _PROSE_CLAIM_COVERAGE]
+    pending = pending[:_MAX_PROSE_SENTENCES]
+    if not pending:
+        return []
+    if nli is None:
+        return pending
+
+    by_id = {r.chunk_id: r for r in retrieved}
+    cited = [by_id[cid] for c in claims for cid in c.cite if cid in by_id]
+    ranked = sorted(retrieved, key=lambda r: r.score or 0.0, reverse=True)
+    prem_chunks: list[RetrievedChunk] = []
+    seen: set[str] = set()
+    for chunk in [*cited, *ranked]:
+        if chunk.chunk_id not in seen:
+            seen.add(chunk.chunk_id)
+            prem_chunks.append(chunk)
+    premises = [f"{c.title}\n{c.text}" for c in prem_chunks]
+
+    scores = nli.score_prose(pending, premises)
+    return [
+        s for s, sc in zip(pending, scores, strict=True) if sc.entailment < _PROSE_ENTAIL_THRESHOLD
+    ]

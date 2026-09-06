@@ -104,6 +104,9 @@ class Settings(BaseSettings):
     corpus_dir: Path = _REPO_ROOT / "data" / "corpus"
     index_dir: Path = _REPO_ROOT / "data" / "index"
     feedback_dir: Path = _REPO_ROOT / "data" / "feedback"
+    # Optional private HF Dataset repo ("user/ad-fontes-feedback") the feedback
+    # rows are mirrored to — the Space filesystem is ephemeral. Needs HF_TOKEN.
+    feedback_dataset: str | None = None
 
     # --- Public-endpoint safety --------------------------------------
     rate_limit_requests: int = 10

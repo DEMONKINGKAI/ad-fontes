@@ -132,6 +132,27 @@ def test_verify_prose_flags_sentence_not_in_claims_or_chunks(chunks_sample):
     assert not any("solo narrative RPG" in s for s in flagged)
 
 
+def test_verify_prose_flags_sentence_behind_a_failing_claim(chunks_sample):
+    """A prose sentence mirrored only by an *unsupported* claim is not covered —
+    it goes through NLI and, unbacked, is flagged (the pgmpy/pharmacausal case)."""
+    from app.api.schemas import Claim, ClaimLabel, ClaimVerification
+    from tests._fakes import FakeNLI
+
+    claims = [
+        Claim(
+            text="Kai chose pgmpy for the Threadfall engine.",
+            cite=["threadfall#one-line-summary"],
+            verification=ClaimVerification(
+                label=ClaimLabel.unsupported, entailment=0.03, contradiction=0.02
+            ),
+        )
+    ]
+    prose = "Kai chose pgmpy for the Threadfall engine because it handles large DAGs well."
+    nli = FakeNLI(default=(0.04, 0.92, 0.04))
+    flagged = verify_prose(prose, claims, chunks_sample, nli)
+    assert flagged == [prose]
+
+
 # --- schema ------------------------------------------------------
 
 

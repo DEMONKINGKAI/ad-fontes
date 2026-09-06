@@ -1,6 +1,13 @@
 # Serving runtime — mirrors [project.dependencies] in pyproject.toml.
 # Kept as a flat file so the Docker build can install and cache this layer
 # before the source tree is copied in. Update both together.
+#
+# CPU-only box (HF Space, local serving). The PyTorch CPU index keeps `torch`
+# from dragging in ~2 GB of CUDA wheels (nvidia-cudnn / cublas / nccl / …) that a
+# CPU image never loads. Training deps live in requirements-rlhf.txt and keep the
+# default CUDA torch.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
 fastapi>=0.115,<0.116
 uvicorn[standard]>=0.32,<0.33
 pydantic>=2.9,<3
@@ -12,7 +19,7 @@ sentence-transformers>=3.3,<4
 einops>=0.8,<0.9
 transformers>=4.46,<5
 sentencepiece>=0.2,<0.3          # DeBERTa-v3 NLI tokenizer needs it (else all-neutral)
-torch>=2.2,<3
+torch>=2.2,<3                    # resolves to the +cpu build via the index URL above
 llama-cpp-python>=0.3.2,<0.4
 huggingface-hub>=0.26,<1
 numpy>=1.26,<3

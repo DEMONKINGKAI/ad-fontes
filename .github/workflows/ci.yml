@@ -93,3 +93,7 @@ jobs:
           push: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          # Optional: if the repo sets an HF_TOKEN Actions secret, the tuned GGUF
+          # is baked too. Absent, the build step is a no-op (mount required=false).
+          secrets: |
+            HF_TOKEN=${{ secrets.HF_TOKEN }}

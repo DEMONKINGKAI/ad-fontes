@@ -36,7 +36,7 @@ This repo is the **backend only** — a CORS-enabled, streaming HTTP API. The ch
 | 3 | Preference-data pipeline (RLAIF) | ✅ pipeline built + pilot; full run pending |
 | 4 | DPO training (Colab) + GGUF export | ✅ notebook + export recipe + code-path test; training run pending |
 | 5 | Evaluation: base vs. tuned, the story | ✅ harness + adversarial set built; awaits the tuned GGUF |
-| 6 | Deployment (HF Space) | ⬜ |
+| 6 | Deployment (HF Space) | ✅ image built + container smoke-tested locally (cold-start `ok` ~20 s, 4.4 GB to push); Space card + feedback mirror in place; Space push pending |
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the pipeline and the reasoning behind each choice.
 
@@ -120,6 +120,23 @@ Then upload `data/rlhf/pairs.jsonl` to Drive and run
 [`app/rlhf/train_dpo.ipynb`](app/rlhf/train_dpo.ipynb) on a Colab T4 (QLoRA, resumable),
 followed by [`app/rlhf/export_gguf.md`](app/rlhf/export_gguf.md) to merge → GGUF → HF Hub.
 The API then serves it as `model: "tuned"`.
+
+### Deploy to a Hugging Face Space
+
+The repo `Dockerfile` is the Space image (Docker SDK). Full walkthrough in
+[deploy/DEPLOY.md](deploy/DEPLOY.md); in short:
+
+```bash
+scripts/prepare_space.sh <hf-user>/ad-fontes    # stages deploy/README.md, adds the 'space' remote
+git push space space:main
+# set Space secrets: HF_TOKEN, CORS_ORIGINS, AD_FONTES_FEEDBACK_DATASET
+scripts/smoke_test.sh https://<hf-user>-ad-fontes.hf.space --allow-cold
+```
+
+Cold start is ~40–70 s (models load once). The Space FS is ephemeral, so
+`/api/feedback` rows are mirrored to a private HF Dataset when
+`AD_FONTES_FEEDBACK_DATASET` is set. `scripts/smoke_sse.mjs` is a zero-dependency
+Node SSE check for Vercel-widget parity.
 
 ---
 

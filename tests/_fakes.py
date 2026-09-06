@@ -195,5 +195,8 @@ class FakeNLI:
     def score_claim(self, claim, premises):
         return self._score(claim)
 
+    def score_prose(self, sentences, premises):
+        return [self._score(s) for s in sentences]
+
     def score(self, premise, hypothesis):
         return self._score(hypothesis)

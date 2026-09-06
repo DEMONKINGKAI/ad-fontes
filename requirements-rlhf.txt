@@ -1,6 +1,8 @@
 # Preference-data construction (Phase 3), the DPO code-path test, and evaluation
 # (Phase 5). Not in the serving image. `bitsandbytes` is deliberately omitted —
-# it needs CUDA and only runs in the Colab notebook (Phase 4).
+# it needs CUDA and only runs in the Colab notebook (Phase 4), which installs its
+# own CUDA torch. Everything here runs on CPU, so the inherited CPU torch (from
+# requirements.txt's index URL) is correct.
 -r requirements.txt
 datasets>=3.0,<4
 trl>=0.13,<0.14

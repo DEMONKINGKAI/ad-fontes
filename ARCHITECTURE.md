@@ -153,6 +153,14 @@ The first full base eval surfaced four issues; fixed before Phase 3 because the 
 3. **Lexical backstop removed.** It rescued 0 claims in the full run and risked false-positives on paraphrase-but-wrong claims; the frame-strip made it redundant.
 4. **`self.last` race.** The generator stashed its result on a mutable attribute two overlapping requests could stomp; the terminal `GenerationDelta` now carries the `GeneratedAnswer`.
 
+### Phase 2.6 — verification: prose coverage + latency
+
+Manual testing of the deployed image (five recruiter-style questions) surfaced three things:
+
+1. **`verify_prose` was label-blind.** A prose sentence was cleared if *any* claim lexically mirrored it — including an `unsupported` / `contradicted` one. So "Kai chose pgmpy for pharmacausal" (the corpus says causal-learn) showed **no prose flag** even though its claim was `unsupported`. Fixed: only a **`supported`** claim clears a sentence; everything else goes through NLI against the cited chunks + top-ranked retrieved. The pgmpy false-premise, "Kai deployed Threadfall to production", and the `neg-k8s` Kubernetes case now all surface in `unverified_prose`.
+2. **`contradicted` fired on conflations.** The base model merges two source statements ("document pipelines" + "applications on Gemini/Titan" → "document pipelines on Gemini/Titan"); NLI then scored one window as partly contradicting. Added `CONTRADICTION_MARGIN = 0.12` — contradiction must *beat* entailment, not tie it. Conflations now land as `unsupported` ("not confirmed"), which is the honest reading.
+3. **Verification latency was ~20 s on multi-sentence answers.** `verify_prose` ran NLI once per sentence, and the `tech-stack-map` chunk (a 2,500-char markdown table with no sentence punctuation) became one 512-token window that forced every batch to pad to max length. Fixes: `_windows` hard-splits any long punctuation-free premise; NLI max sequence length 512 → 384; a single batched forward for all prose (sentence, window) pairs; prose premises restricted to cited + top-ranked. **Measured: verification p50 ≈ 19 s → 1.3 s, p90 ≈ 3.7 s** (Phase 2 eval, 76 questions).
+
 ### Deviations from the brief (Phase 2)
 
 - **`app/generation/base.py` and `app/bootstrap.py`** added to the file list — the two generator backends need one shared interface + `ProseStreamer`, and the API lifespan and the eval must build the *same* pipeline.
@@ -163,26 +171,30 @@ The first full base eval surfaced four issues; fixed before Phase 3 because the 
 
 ### Phase 2 eval — base-model baseline
 
-`python -m app.eval.run_eval --stage generation --model base` · 76 questions · base `f89e135` + Phase 2.5 hardening · full report at [`app/eval/baselines/generation-base-phase2.md`](app/eval/baselines/generation-base-phase2.md).
+`python -m app.eval.run_eval --stage generation --model base` · 76 questions · base `f89e135` + Phase 2.5/2.6 hardening · full report at [`app/eval/baselines/generation-base-phase2.md`](app/eval/baselines/generation-base-phase2.md).
 
-| metric | before 2.5 | **base (Qwen2.5-1.5B), after 2.5** |
-|---|---|---|
-| **unsupported + fabricated claims / 100 answers** | 56.6 | **44.7** |
-| **unverified prose sentences / 100 answers** (new) | — | **35.5** (29% of answers have ≥1) |
-| citation hit rate | 93.8% | 93.7% |
-| supported rate (of all claims) | 42% | **51%** |
-| label distribution (79 claims) | 34 / 38 / 5 / 3 | supported 40 · unsupported 29 · fabricated 5 · contradicted 5 |
-| contradicted / 100 · numeric violations / 100 | 3.9 / 3.9 | 6.6 / 3.9 |
-| decline on the 10 negative controls | 40% | 40% (the 4 denylist ones) |
-| false-decline on the 66 answerable | 0% | 0% |
-| latency p50 / p95 (dev box ≈ ½ a 2 vCPU Space) | 14 / 28 s | 16 / 33 s |
-| hosted-fallback rate | 7% | 7% |
+| metric | before 2.5 | after 2.5 | **base, after 2.6** |
+|---|---|---|---|
+| **unsupported + fabricated claims / 100 answers** | 56.6 | 44.7 | **48.7** |
+| **unverified prose sentences / 100 answers** | — | 35.5 | **68.4** (49% of answers have ≥1) |
+| citation hit rate | 93.8% | 93.7% | 93.7% |
+| supported rate (of all claims) | 42% | 51% | 48% |
+| label distribution | 34 / 38 / 5 / 3 | 40 / 29 / 5 / 5 | supported 38 · unsupported 32 · fabricated 5 · contradicted 4 |
+| contradicted / 100 · numeric violations / 100 | 3.9 / 3.9 | 6.6 / 3.9 | **5.3** / 3.9 |
+| decline on the 10 negative controls · false-decline on 66 answerable | 40% · 0% | 40% · 0% | 40% · 0% |
+| **verification** p50 / p90 | — | ~19 s / — | **1.3 s / 3.7 s** |
+| latency p50 / p95 (dev box ≈ ½ a 2 vCPU Space) | 14 / 28 s | 16 / 33 s | 15 / 32 s |
+| hosted-fallback rate | 7% | 7% | 7% |
 
-The NLI frame-strip (Phase 2.5) is what moved the headline: 12 legitimately-grounded framed claims flipped `unsupported`/`contradicted` → `supported`.
+**Why the two claim/prose metrics moved in 2.6** — not a regression, a correction:
+
+- `unsupported+fab` 44.7 → 48.7: the `contradicted` margin moves conflation claims from `contradicted` (not in this metric) into `unsupported` (in it). `contradicted/100` fell 6.6 → 5.3 in step.
+- `unverified prose` 35.5 → 68.4: the old number was **artificially low** — sentences behind `unsupported`/`contradicted` claims were silently cleared. The new number is the honest one for a base model that asserts more in prose than it extracts as claims. Roughly half the new flags are legitimate (`adv-thread-prod`, `neg-k8s`, `exp-axisray`, verb inflation, `det-fons-revert` "removed" vs corpus "added"); the rest are **DeBERTa-base false-positives on reworded-but-true prose** ("Kai's strongest area is *production-level language model (LLM) and retrieval-Augmented Generation (RAG) engineering*" vs corpus "production LLM/RAG engineering") — the same model limitation already documented for claims. It inflates the metric for both models; the base more, since it rewords more. The base↔tuned **delta** (Phase 5) is the signal, not the absolute.
+- Phase 3 note: `judge.py`'s hard veto at `unverified_prose_count >= 2` should probably become a soft penalty given this noise — flagged for the Phase 3 run.
 
 **Variance:** on repeated small subsets during development the headline moved ±10 (temperature 0.3 + subset composition). The full-set number is more stable; Phase 5 runs base and tuned ≥2× each with bootstrap CIs.
 
-**Genuine failures the layer catches:** `exp-axisray` — the model attributed EffiGO's work to Axisray; `adv-thread-prod` — "Kai deployed Threadfall to production for real users" (corpus says `demo: null`); `exp-effigo`/`exp-intern` — correct facts cited to a non-retrieved chunk (`fabricated_citation`); `neg-k8s` — "Kai has worked on Kubernetes" appears in *prose* with no matching claim → caught by `verify_prose`. Residual noise: some flagged prose states true-but-unrequested bio ("He has contributed to Causeway, Threadfall, …") — a mild relevance issue the tuned model should also reduce. The tuned model should (a) make atomic, checkable claims, (b) keep prose == claims, (c) decline the unanswerable negatives, (d) drop over-reaching verbs.
+**Genuine failures the layer catches:** `exp-axisray` — the model attributed EffiGO's work to "Axisray"; `adv-thread-prod` — "Kai deployed Threadfall to production for real users" (corpus says `demo: null`); `exp-effigo`/`exp-intern` — correct facts cited to a non-retrieved chunk (`fabricated_citation`); `neg-k8s` — "Kai has worked on Kubernetes" (corpus says "serverless and containerised microservices", never k8s); `adv-led-team` — "responsible for the ML team" (verb inflation). The tuned model should (a) make atomic, checkable claims, (b) keep prose == claims, (c) decline the unanswerable negatives, (d) drop over-reaching verbs.
 
 ## Phase 3 decisions — RLAIF preference data
 
@@ -253,6 +265,28 @@ Before the tuned GGUF exists, `--a base --b hosted` is a valid stand-in that exe
 - `compare.py` lives in `app/rlhf/` (brief §6 layout) but is the Phase 5 harness; `app.eval.run_eval --stage compare` still stubs out (points at it).
 - `answer_row` / summariser factored out of `app/eval/generation.py` and shared.
 
+## Phase 6 — deployment (Hugging Face Space, Docker SDK)
+
+Target: a free HF Space, 2 vCPU / 16 GB, CPU-only, ephemeral disk, sleeps when idle.
+
+| Piece | What |
+|---|---|
+| image | the repo `Dockerfile`, multi-stage. **builder** installs deps (CPU-only `torch` from the PyTorch CPU index — a generic `torch` pulls ~2 GB of unused CUDA wheels; prebuilt `llama-cpp-python` CPU wheel via `--extra-index-url`), bakes the corpus + Chroma index + embedder + NLI + base GGUF (+ tuned GGUF when its repo exists), via `python -m scripts.download_models`. **runtime** is CPU-only, non-root uid 1000, models load once at startup. **~10.5 GB on disk / 4.4 GB content** to push (was ~18 GB before the torch-CPU pin). |
+| private source repos | the tuned GGUF download step reads `HF_TOKEN` as a **build secret** (`RUN --mount=type=secret,id=HF_TOKEN`) — no token baked into the image. Missing/failed tuned download is a logged no-op; `model:"tuned"` then serves `base`. |
+| Space card | [`deploy/README.md`](deploy/README.md) — `sdk: docker`, `app_port: 7860`. `scripts/prepare_space.sh <user>/<space>` stages it as the root `README.md` on a `space` branch and adds the `space` remote. |
+| runtime env | dropped `HF_HUB_OFFLINE=1` (a rebuild re-checks etags; offline was brittle when a model 404s), added `HF_HUB_DISABLE_TELEMETRY=1`, `HF_HOME=/app/data/models/hf`, `AD_FONTES_PORT=7860`. `HEALTHCHECK` on `/api/health/live` with `--start-period=150s`. `CMD` is `uvicorn --workers 1` (the rate limiter and the llama.cpp lock are per-process). |
+| health semantics | `/api/health` reaches `ok` on the **serving-critical** set (retriever, embedder, `generator:base`, NLI). `generator:tuned` is optional — absent until the DPO GGUF is published, and `model:"tuned"` transparently serves base — so it is reported (with a `detail` note) but does **not** hold the status at `degraded`. |
+| feedback persistence | the Space FS is wiped on rebuild/restart, so `record_feedback(settings, payload)` also mirrors the day's JSONL to a private HF **Dataset** repo (`AD_FONTES_FEEDBACK_DATASET` + `HF_TOKEN`) via `HfApi.upload_file`. Best-effort: a failure logs a warning and never breaks `POST /api/feedback`. Covered by `tests/test_feedback.py` (mocked `HfApi`). |
+| smoke tests | `scripts/smoke_test.sh <url> [--allow-cold]` hits every §5 endpoint incl. a real SSE parse (events reach `done`, `meta.generator` present) and the 422 length cap, exits non-zero on failure. `scripts/smoke_sse.mjs` does the same SSE consume from Node (Vercel-widget parity, no deps). |
+| verify | `docker compose up --build` then `scripts/smoke_test.sh http://localhost:8000 --allow-cold`. CI `docker` job builds the image (buildx). |
+
+**Validated locally** (Docker Desktop / Windows, WSL2): `docker build --target runtime` succeeds (torch `2.14.0+cpu`, no CUDA wheels; base GGUF baked, tuned GGUF a logged no-op via `RepositoryNotFoundError`). The container cold-starts to `status: ok` in **~20 s**, and `scripts/smoke_test.sh` passes 7/7 — `/api/ask` (SSE: `sources → token → claims → meta → done`, `generator: local-base`), `/api/ask/sync`, `/api/feedback`, the 422 cap. Generation was ~12 s/answer here; a 2 vCPU Space will be slower, which is what the hosted fallback is for.
+
+### Deviations from the brief (Phase 6)
+
+- The §5 contract is unchanged. `record_feedback`'s **internal** signature changed from `(feedback_dir, payload)` to `(settings, payload)` so the dataset-mirror config threads through without a global settings read (matters for test overrides); no HTTP-visible change.
+- `/api/health` `ok` no longer requires `generator:tuned` (see health semantics above) — a behaviour change to a diagnostic endpoint, not the §5 answer contract.
+
 ## Open items carried forward
 
 - Phase 3 full run + judge–human agreement check (Kai; scripts + pilot in place).
@@ -272,10 +306,20 @@ Before the tuned GGUF exists, `--a base --b hosted` is a valid stand-in that exe
   hand-labelled pairs in Phase 3; if < ~80%, the rubric is fixed before training.
 - **NLI recall on aggregate/summary claims is weak** (DeBERTa-v3-base). The
   frame-strip (Phase 2.5) fixed the framed-claim class; some genuinely-supported
-  broad claims still land as `unsupported`. This inflates the "unsupported per
-  100" metric for *both* models, but the base model — which makes more sweeping
-  claims — is penalised more, which is itself a faithfulness signal (a humble
-  model makes checkable claims). Treat `unsupported` as "not confirmed", not
-  "false" (fons-iuris's four-label rationale).
+  broad claims still land as `unsupported`, and the Phase 2.6 prose check adds a
+  second surface for the same weakness — a reworded-but-true prose sentence
+  ("production-level language model (LLM) and retrieval-Augmented Generation (RAG)
+  engineering" vs corpus "production LLM/RAG engineering") is flagged. This
+  inflates both the "unsupported / 100" and "unverified-prose / 100" metrics for
+  *both* models, the base more (it rewords more), which is itself a faithfulness
+  signal. Treat `unsupported` / flagged-prose as "not confirmed", not "false"
+  (fons-iuris's four-label rationale); the base↔tuned delta is the real signal.
+  A better NLI model would help but is out of the CPU-serving budget.
 - Local generation on a 2 vCPU Space is slow (~15–40 s); the hosted fallback
   carries the long tail. The `generator` field always says which model answered.
+  A consequence: on the deployed Space many answers are `hosted-fallback`, which
+  weakens the base↔tuned toggle as a *live* demo — the honest comparison is the
+  Phase 5 `compare` run, not clicking the toggle on a cold Space. Raising
+  `AD_FONTES_LOCAL_TIMEOUT_S` trades latency for more genuine local answers.
+- Feedback rows only persist if `AD_FONTES_FEEDBACK_DATASET` is set; otherwise
+  they live in the container's ephemeral disk until the next restart.

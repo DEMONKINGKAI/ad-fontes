@@ -1,10 +1,17 @@
 """Fuse the layers into one ``ClaimLabel`` (+ numeric flag).
 
 Decision order (fons-iuris semantics, brief §4):
-  1. Structural fail                        -> ``fabricated_citation`` (NLI skipped).
-  2. NLI contradiction confident + dominant  -> ``contradicted``.
-  3. NLI entailment clears the threshold     -> ``supported``.
-  4. Otherwise                               -> ``unsupported`` (neutral).
+  1. Structural fail                          -> ``fabricated_citation`` (NLI skipped).
+  2. NLI contradiction confident *and clearly
+     beats entailment (by a margin)*          -> ``contradicted``.
+  3. NLI entailment clears the threshold       -> ``supported``.
+  4. Otherwise                                 -> ``unsupported`` (neutral).
+
+The margin in step 2 keeps a claim that merely *conflates* two source statements
+(the base model's habit — some windows partly support it, one partly contradicts)
+out of ``contradicted``: a bare-tie contradiction lands as ``unsupported``, which
+is the correct "NLI could not confirm it" reading. A genuine contradiction still
+scores contradiction well above entailment.
 
 The numeric guard is orthogonal — it sets ``numeric_flag`` but does not change the
 label (a supported claim with a mis-stated number is more useful shown as
@@ -25,6 +32,9 @@ from app.verification.structural import StructuralResult
 
 ENTAILMENT_THRESHOLD = 0.55
 CONTRADICTION_THRESHOLD = 0.50
+# ``contradicted`` needs contradiction to beat entailment by at least this — not
+# just tie it. Tuned against conflation false-positives seen in manual testing.
+CONTRADICTION_MARGIN = 0.12
 
 
 def fuse_label(
@@ -38,7 +48,10 @@ def fuse_label(
         return ClaimLabel.fabricated_citation, flag
     if nli is None:
         return ClaimLabel.unsupported, flag
-    if nli.contradiction >= CONTRADICTION_THRESHOLD and nli.contradiction >= nli.entailment:
+    if (
+        nli.contradiction >= CONTRADICTION_THRESHOLD
+        and nli.contradiction >= nli.entailment + CONTRADICTION_MARGIN
+    ):
         return ClaimLabel.contradicted, flag
     if nli.entailment >= ENTAILMENT_THRESHOLD:
         return ClaimLabel.supported, flag

@@ -26,6 +26,30 @@ def test_health_reports_starting_before_models_load(client):
     assert {"retriever", "nli", "generator:base", "generator:tuned"} <= names
 
 
+def test_health_ok_without_tuned_generator(client):
+    """The tuned GGUF is optional (published later); its absence must not keep
+    /api/health at 'degraded' forever — 'model:tuned' just serves base."""
+    comps = client.app.state.app_state.components
+    comps.retriever = comps.embedder = object()
+    comps.base_generator = comps.nli = object()
+    comps.tuned_generator = None
+
+    body = client.get("/api/health").json()
+    assert body["status"] == "ok"
+    tuned = next(m for m in body["models"] if m["name"] == "generator:tuned")
+    assert tuned["loaded"] is False
+    assert "optional" in tuned["detail"]
+
+
+def test_health_degraded_when_core_model_missing(client):
+    comps = client.app.state.app_state.components
+    comps.retriever = comps.embedder = comps.base_generator = object()
+    comps.nli = None  # a core model failed to load
+    comps.tuned_generator = None
+
+    assert client.get("/api/health").json()["status"] == "degraded"
+
+
 def test_openapi_served(client):
     assert client.get("/openapi.json").status_code == 200
 

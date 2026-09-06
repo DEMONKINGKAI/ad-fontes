@@ -55,7 +55,10 @@ def _veto(cand: dict, scores: dict) -> str | None:
         return "contradicted_claim"
     if v["fabricated"] > 0:
         return "fabricated_citation"
-    if v["unverified_prose_count"] >= 2:
+    # >=3 (was 2): Phase 2.6 made verify_prose stricter and noisier — DeBERTa-base
+    # false-positives on reworded-but-true prose mean 1-2 flags is common on a
+    # genuinely fine answer. build_pairs._combined still penalises every flag.
+    if v["unverified_prose_count"] >= 3:
         return "prose_hallucination"
     if scores.get("faithfulness", 5) <= 2:
         return "judge_faithfulness"

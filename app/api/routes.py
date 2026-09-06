@@ -107,7 +107,7 @@ async def feedback(
     body: FeedbackRequest,
     state: AppState = Depends(get_state),
 ) -> FeedbackResponse:
-    record_feedback(state.settings.feedback_dir, body)
+    record_feedback(state.settings, body)
     return FeedbackResponse(stored=True, answer_id=body.answer_id)
 
 
@@ -125,11 +125,20 @@ async def projects(state: AppState = Depends(get_state)) -> list[ProjectSummary]
 @router.get("/health", response_model=HealthResponse)
 async def health(state: AppState = Depends(get_state)) -> HealthResponse:
     components = state.components
+    tuned_loaded = components.tuned_generator is not None
     models = [
         ModelStatus(name="retriever", loaded=components.retriever is not None),
         ModelStatus(name="embedder", loaded=components.embedder is not None),
         ModelStatus(name="generator:base", loaded=components.base_generator is not None),
-        ModelStatus(name="generator:tuned", loaded=components.tuned_generator is not None),
+        ModelStatus(
+            name="generator:tuned",
+            loaded=tuned_loaded,
+            detail=(
+                None
+                if tuned_loaded
+                else "optional: tuned GGUF not published yet; 'model=tuned' serves base"
+            ),
+        ),
         ModelStatus(name="nli", loaded=components.nli is not None),
     ]
     index_size = 0
@@ -138,10 +147,15 @@ async def health(state: AppState = Depends(get_state)) -> HealthResponse:
             index_size = int(components.retriever.index_health()["indexed"])
         except Exception:
             index_size = 0
-    all_loaded = all(m.loaded for m in models)
-    status_str = (
-        "ok" if all_loaded else ("starting" if not any(m.loaded for m in models) else "degraded")
-    )
+    # `generator:tuned` is optional: it is absent until the DPO GGUF is published,
+    # and `model:"tuned"` transparently serves base meanwhile. It does not gate "ok".
+    required = [m for m in models if m.name != "generator:tuned"]
+    if all(m.loaded for m in required):
+        status_str = "ok"
+    elif any(m.loaded for m in models):
+        status_str = "degraded"
+    else:
+        status_str = "starting"
     return HealthResponse(
         status=status_str,
         corpus_version=state.settings.corpus_version,

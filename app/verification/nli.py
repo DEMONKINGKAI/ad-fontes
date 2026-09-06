@@ -18,6 +18,12 @@ factual core is verbatim in the premise. So ``score_claim``:
   * contradiction = the strongest sentence's best-contradiction score — any
     contradicted part taints the claim.
 
+``score_prose`` applies the same framed/stripped × window idea to a *batch* of
+narration sentences in one forward pass (``verify_prose`` calls it for every
+prose sentence no supported claim covers). All premise windows are hard-capped
+in length so one markdown-table chunk can't force the whole batch to pad to the
+model's max sequence length.
+
 The label order is read from ``model.config.id2label``, not assumed.
 """
 
@@ -31,6 +37,11 @@ _SENT_SPLIT = re.compile(r"(?<=[.!?;])\s+(?=[A-Z0-9])")
 _MAX_WINDOW_CHARS = 600
 _MAX_WINDOWS_PER_PREMISE = 5
 _MAX_PAIRS_PER_CLAIM = 12
+# Prose verification scores every narration sentence, so it batches all
+# (sentence-variant, window) pairs into one forward pass and caps the shared
+# window pool harder than the per-claim path.
+_MAX_WINDOWS_PROSE = 8
+_NLI_SUB_BATCH = 16
 
 # Leading framing to strip so the factual core is what NLI sees.
 _FRAME = re.compile(
@@ -63,11 +74,35 @@ class NLIScore:
         return cls(0.0, 1.0, 0.0)
 
 
+_SEP_SPLIT = re.compile(r"(?<=[|\n;,])\s+|\s+")
+
+
+def _hard_split(text: str, limit: int) -> list[str]:
+    """Break a string with no sentence punctuation (markdown tables, comma lists)
+    into <= ``limit``-char pieces so a window is never a 500-token blob that
+    forces the whole NLI batch to pad to max length."""
+    if len(text) <= limit:
+        return [text]
+    parts: list[str] = []
+    buf = ""
+    for tok in _SEP_SPLIT.split(text):
+        if buf and len(buf) + len(tok) + 1 > limit:
+            parts.append(buf.strip())
+            buf = tok
+        else:
+            buf = f"{buf} {tok}".strip()
+    if buf:
+        parts.append(buf.strip())
+    return [p for p in parts if p]
+
+
 def _windows(premise: str) -> list[str]:
     premise = _clean(premise.strip())
     if len(premise) <= _MAX_WINDOW_CHARS:
         return [premise]
-    sents = _SENT_SPLIT.split(premise)
+    sents = [
+        piece for s in _SENT_SPLIT.split(premise) for piece in _hard_split(s, _MAX_WINDOW_CHARS)
+    ]
     out: list[str] = []
     cur = ""
     for s in sents:
@@ -103,26 +138,38 @@ class NLIVerifier:
             "contradiction": next(i for i, v in id2label.items() if "contradict" in v),
         }
 
-    def _score_pairs(self, premises: list[str], hypothesis: str) -> list[NLIScore]:
+    def _score_batch(self, premises: list[str], hypotheses: list[str]) -> list[NLIScore]:
+        """NLI over parallel (premise, hypothesis) lists, in sub-batches."""
         torch = self._torch
+        out: list[NLIScore] = []
         with torch.no_grad():
-            enc = self._tok(
-                premises,
-                [hypothesis] * len(premises),
-                return_tensors="pt",
-                truncation=True,
-                max_length=512,
-                padding=True,
-            ).to(self._device)
-            probs = torch.softmax(self._model(**enc).logits, dim=-1).cpu().tolist()
-        return [
-            NLIScore(
-                entailment=p[self._idx["entailment"]],
-                neutral=p[self._idx["neutral"]],
-                contradiction=p[self._idx["contradiction"]],
-            )
-            for p in probs
-        ]
+            for i in range(0, len(premises), _NLI_SUB_BATCH):
+                pj = premises[i : i + _NLI_SUB_BATCH]
+                hj = hypotheses[i : i + _NLI_SUB_BATCH]
+                enc = self._tok(
+                    pj,
+                    hj,
+                    return_tensors="pt",
+                    truncation=True,
+                    # windows are hard-capped at _MAX_WINDOW_CHARS (~180 tokens);
+                    # 384 covers premise + hypothesis with headroom and keeps the
+                    # padded batch small (the CPU forward cost is ~linear in it).
+                    max_length=384,
+                    padding=True,
+                ).to(self._device)
+                probs = torch.softmax(self._model(**enc).logits, dim=-1).cpu().tolist()
+                out.extend(
+                    NLIScore(
+                        entailment=p[self._idx["entailment"]],
+                        neutral=p[self._idx["neutral"]],
+                        contradiction=p[self._idx["contradiction"]],
+                    )
+                    for p in probs
+                )
+        return out
+
+    def _score_pairs(self, premises: list[str], hypothesis: str) -> list[NLIScore]:
+        return self._score_batch(premises, [hypothesis] * len(premises))
 
     def score(self, premise: str, hypothesis: str) -> NLIScore:
         return self._best(self._score_pairs(_windows(premise), _clean(hypothesis)))
@@ -153,6 +200,50 @@ class NLIVerifier:
         e = min(entailments) if entailments else 0.0
         c = max(contradictions) if contradictions else 0.0
         return NLIScore(entailment=e, neutral=max(0.0, 1.0 - e - c), contradiction=c)
+
+    def score_prose(self, sentences: list[str], premises: list[str]) -> list[NLIScore]:
+        """One score per narration sentence against a shared premise set.
+
+        Called by ``verify_prose`` for every prose sentence that no *supported*
+        claim covers, in one batched forward pass: entailment = best over
+        {sentence, frame-stripped} × windows; contradiction from the framed form
+        only (as in ``score_claim``). ``premises`` should be most-relevant-first
+        — the shared window pool is capped.
+        """
+        windows: list[str] = []
+        for p in premises:
+            windows.extend(_windows(p))
+            if len(windows) >= _MAX_WINDOWS_PROSE:
+                break
+        windows = windows[:_MAX_WINDOWS_PROSE]
+        if not windows or not sentences:
+            return [NLIScore.zero() for _ in sentences]
+
+        prem: list[str] = []
+        hyp: list[str] = []
+        owner: list[int] = []
+        framed: list[bool] = []
+        for i, sent in enumerate(sentences):
+            clean = _clean(sent)
+            variants = [(clean, True)]
+            stripped = _clean(_strip_frame(sent))
+            if stripped != clean:
+                variants.append((stripped, False))
+            for text, is_framed in variants:
+                for w in windows:
+                    prem.append(w)
+                    hyp.append(text)
+                    owner.append(i)
+                    framed.append(is_framed)
+
+        scores = self._score_batch(prem, hyp)
+        ent = [0.0] * len(sentences)
+        con = [0.0] * len(sentences)
+        for o, is_framed, sc in zip(owner, framed, scores, strict=True):
+            ent[o] = max(ent[o], sc.entailment)
+            if is_framed:
+                con[o] = max(con[o], sc.contradiction)
+        return [NLIScore(e, max(0.0, 1.0 - e - c), c) for e, c in zip(ent, con, strict=True)]
 
     @staticmethod
     def _best(scores: list[NLIScore]) -> NLIScore:
